@@ -1,10 +1,10 @@
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
 import { User } from '../../../utils/interface';
-import Logo from '../../../assets/images/logo.png';
-import navLinks from './nav.json';
-import LinkHeader from './LinkHeader';
+import AuthHeader from './AuthHeader';
+import Navigation from './Navigation';
+import UserHeader from './UserHeader';
 
 interface Props {
 	frontBaseUrl: string;
@@ -51,7 +51,7 @@ function Header({ frontBaseUrl }: Props) {
 		setIsNavigationOpen(window.innerWidth > 900);
 	}
 
-	function handleNavPhoneCLick() {
+	function handleNavPhoneClick() {
 		setIsNavigationOpen(!isNavigationOpen);
 	}
 
@@ -63,51 +63,21 @@ function Header({ frontBaseUrl }: Props) {
 			style={isScrolled || isAuthPage ? { backdropFilter: 'blur(10px)' } : {}}
 		>
 			{isAuthPage ? (
-				<div className='auth-header'>
-					<img src={Logo} alt='logo' width={'40px'} height={'40px'} />
-					<span className='second-font'>Flixhunt</span>
-				</div>
+				<AuthHeader />
 			) : (
 				<>
-					<nav>
-						<Link to='/'>
-							<img src={Logo} alt='logo' width={'40px'} height={'40px'} />
-							<span className='second-font'>Flixhunt</span>
-						</Link>
-						{isNavigationOpen && (
-							<ul>
-								{navLinks.navigation.map(
-									(navLink: { path: string; name: string }) => (
-										<li key={navLink.name}>
-											<LinkHeader
-												locationPathname={location.pathname.substring(1)}
-												path={navLink.path}
-												name={navLink.name}
-											/>
-										</li>
-									)
-								)}
-							</ul>
-						)}
-					</nav>
+					<Navigation isNavigationOpen={isNavigationOpen} />
 
-					<div className='header-user-wrapper'>
-						<span className='second-font'>{user.username}</span>
-						<img
-							src={`${frontBaseUrl}/src/assets/images/${user.image}`}
-							alt='1'
-							width={'40px'}
-							height={'40px'}
-						/>
-						{responsive && !isNavigationOpen && (
-							<div className='nav-phone-open' onClick={handleNavPhoneCLick}>
-								&#8801;
-							</div>
-						)}
-					</div>
+					<UserHeader
+						frontBaseUrl={frontBaseUrl}
+						user={user}
+						responsive={responsive}
+						isNavigationOpen={isNavigationOpen}
+						handleNavPhoneClick={handleNavPhoneClick}
+					/>
 
 					{responsive && isNavigationOpen && (
-						<div className='nav-phone-close' onClick={handleNavPhoneCLick}>
+						<div className='nav-phone-close' onClick={handleNavPhoneClick}>
 							&#10006;
 						</div>
 					)}
