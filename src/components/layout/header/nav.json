@@ -1,0 +1,20 @@
+{
+	"navigation": [
+		{
+			"name": "Movies",
+			"path": "/movies"
+		},
+		{
+			"name": "TV shows",
+			"path": "/tv-shows"
+		},
+		{
+			"name": "Search",
+			"path": "/search"
+		},
+		{
+			"name": "My lists",
+			"path": "/my-lists"
+		}
+	]
+}

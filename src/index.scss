@@ -1,0 +1,19 @@
+@import './assets/styles/variables.scss';
+@import './assets/styles/auth.scss';
+@import './assets/styles/home.scss';
+@import './assets/styles/layout.scss';
+
+* {
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+	font-family: $main-font, Arial, Helvetica, sans-serif;
+	color: #fff;
+	// border: 1px solid red;
+}
+*::placeholder {
+	font-family: $main-font, Arial, Helvetica, sans-serif;
+}
+.second-font {
+	font-family: $second-font, $main-font, Helvetica, sans-serif;
+}
