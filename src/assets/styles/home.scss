@@ -1,6 +1,9 @@
-.home-wrapper {
-	width: 100%;
-	height: 200vh;
-	min-height: 100vh;
-	background-color: $background-color;
+.list {
+	margin: 20px 10px;
+}
+.list:first-child {
+	margin-top: 0;
+}
+.list:last-child {
+	margin-bottom: 0;
 }

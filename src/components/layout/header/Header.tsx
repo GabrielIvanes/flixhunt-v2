@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 
 import { User } from '../../../utils/interface';
 import AuthHeader from './AuthHeader';
-import Navigation from './Navigation';
+import NavigationHeader from './NavigationHeader';
 import UserHeader from './UserHeader';
 
 interface Props {
@@ -31,7 +31,7 @@ function Header({ frontBaseUrl }: Props) {
 
 		setUser({
 			id: 1,
-			username: 'Gabriel',
+			username: 'John Doe',
 			image: '1.png',
 		});
 
@@ -60,13 +60,13 @@ function Header({ frontBaseUrl }: Props) {
 
 	return (
 		<header
-			style={isScrolled || isAuthPage ? { backdropFilter: 'blur(10px)' } : {}}
+			style={isScrolled || isAuthPage ? { backdropFilter: 'blur(20px)' } : {}}
 		>
 			{isAuthPage ? (
 				<AuthHeader />
 			) : (
 				<>
-					<Navigation isNavigationOpen={isNavigationOpen} />
+					<NavigationHeader isNavigationOpen={isNavigationOpen} />
 
 					<UserHeader
 						frontBaseUrl={frontBaseUrl}

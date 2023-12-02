@@ -1,0 +1,18 @@
+@import '../../assets/styles/variables.scss';
+
+.poster-element {
+	cursor: pointer;
+}
+
+div.poster-element {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: $card-color;
+}
+
+.element-carousel:hover {
+	.name-element {
+		color: $hover-color;
+	}
+}

@@ -17,3 +17,11 @@
 .second-font {
 	font-family: $second-font, $main-font, Helvetica, sans-serif;
 }
+.wrapper {
+	width: 100%;
+	height: fit-content;
+	min-height: 100vh;
+	background-color: $background-color;
+	padding-top: 80px;
+	padding-bottom: 50px;
+}
