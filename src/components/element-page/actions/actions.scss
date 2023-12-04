@@ -1,0 +1,46 @@
+@import '../../../assets/styles/variables.scss';
+
+.actions {
+	display: flex;
+	align-items: center;
+	width: fit-content;
+
+	@media screen and (max-width: 950px) {
+		margin: 20px 0 !important;
+	}
+
+	div {
+		border: 1px Solid white;
+		border-radius: 10px;
+		padding: 5px 10px;
+		text-align: center;
+		color: $background-color;
+		background-color: rgba(255, 255, 255, 0.8);
+		margin: 0 2px;
+
+		* {
+			color: $background-color;
+		}
+	}
+	div:first-of-type {
+		margin-left: 0;
+	}
+	div:last-of-type {
+		margin-right: 0;
+	}
+
+	.icon-actions-wrapper {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 40px;
+
+		svg {
+			font-size: 15px;
+		}
+	}
+
+	.trailer span {
+		margin-left: 5px;
+	}
+}

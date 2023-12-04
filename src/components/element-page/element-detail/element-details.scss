@@ -1,0 +1,153 @@
+@import '../../../assets/styles/variables.scss';
+
+.element-details {
+	width: 90%;
+	height: 500px;
+	display: grid;
+	grid-template-columns: 350px 1fr;
+	grid-template-rows: 500px;
+	z-index: 1;
+
+	@media screen and (max-width: 975px) {
+		display: block;
+		height: fit-content;
+
+		.right {
+			margin-left: 0 !important;
+
+			h1,
+			.tagline {
+				width: 100% !important;
+				text-align: center !important;
+			}
+			.overview,
+			.season-overview {
+				max-height: fit-content !important;
+			}
+
+			.genre {
+				margin-bottom: 10px;
+			}
+
+			.providers-wrapper {
+				position: static !important;
+
+				.providers {
+					flex-wrap: wrap;
+
+					img {
+						margin-top: 5px !important;
+					}
+
+					img:nth-child(n) {
+						margin-left: 0 !important;
+					}
+				}
+			}
+		}
+	}
+
+	@media screen and (max-width: 650px) {
+		.row {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: space-around !important;
+			width: 100%;
+
+			div {
+				margin: 5px 0 !important;
+				padding: 5px !important;
+			}
+		}
+	}
+
+	.left {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.right {
+		position: relative;
+		margin-left: 20px;
+
+		h1 {
+			font-size: 30px;
+			margin-bottom: 10px;
+			width: fit-content;
+		}
+		h2 {
+			font-size: 20px;
+			margin: 5px 0;
+			width: fit-content;
+		}
+
+		p {
+			width: fit-content;
+			font-size: 18px;
+		}
+
+		.tagline {
+			margin: 10px 0;
+			color: $hover-color;
+		}
+
+		.season-overview {
+			max-height: 250px;
+			overflow-y: auto;
+			padding-right: 5px;
+		}
+		.overview {
+			overflow-y: auto;
+			max-height: 110px;
+			padding-right: 5px;
+		}
+		.overview > p,
+		.season-overview > p {
+			text-align: justify;
+		}
+
+		.row {
+			display: flex;
+			justify-content: center;
+			margin: 10px 0;
+
+			div {
+				margin: 0 10px;
+				border: 1px solid #fff;
+				border-radius: 6px;
+				padding: 10px;
+
+				* {
+					text-align: center;
+				}
+			}
+
+			.icon-row {
+				margin-left: 5px;
+			}
+		}
+
+		.providers-wrapper {
+			position: absolute;
+			bottom: 0;
+
+			.providers {
+				display: flex;
+				align-items: center;
+
+				img {
+					width: 50px;
+					margin: 0 5px;
+					border-radius: 6px;
+				}
+				img:first-of-type {
+					margin-left: 0;
+				}
+				img:last-of-type {
+					margin-right: 0;
+				}
+			}
+		}
+	}
+}

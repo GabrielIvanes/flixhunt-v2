@@ -1,3 +1,5 @@
+@import '../../assets/styles/variables.scss';
+
 header {
 	position: relative;
 	display: flex;
@@ -7,7 +9,7 @@ header {
 	width: 100%;
 	background-color: transparent;
 	padding: 10px;
-	z-index: 1;
+	z-index: 2;
 	height: 60px;
 
 	> div {

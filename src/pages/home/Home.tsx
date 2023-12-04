@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-import { Genre, HomeList, Movie, TVShow } from '../../utils/interface';
-import ElementsCarousel from '../../components/carousel/ElementsCarousel';
+import { Genre, ListType, Movie, TVShow } from '../../utils/interface';
 import Loader from '../../components/loader/Loader';
+import List from '../../components/list/List';
 
 interface Props {
 	backBaseUrl: string;
@@ -13,7 +13,7 @@ interface Props {
 function Home({ backBaseUrl, TMDBBaseUrl }: Props) {
 	const [moviesGenres, setMoviesGenres] = useState<Genre[]>([]);
 	const [TVShowsGenres, setTVShowsGenres] = useState<Genre[]>([]);
-	const [homeList, setHomeList] = useState<HomeList[]>([]);
+	const [homeList, setHomeList] = useState<ListType[]>([]);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 
 	/**
@@ -38,7 +38,7 @@ function Home({ backBaseUrl, TMDBBaseUrl }: Props) {
 	 */
 	async function getTVShowsGenres() {
 		try {
-			const response = await axios.get(`${backBaseUrl}/api/TMDB/TV/genres`, {
+			const response = await axios.get(`${backBaseUrl}/api/TMDB/tv/genres`, {
 				withCredentials: true,
 			});
 			setTVShowsGenres(response.data.genres);
@@ -53,12 +53,11 @@ function Home({ backBaseUrl, TMDBBaseUrl }: Props) {
 	async function getMoviesByGenre(genreId: number) {
 		try {
 			const response = await axios.get(
-				`${backBaseUrl}/api/TMDB/movies?genre=${genreId}`,
+				`${backBaseUrl}/api/TMDB/movies/genres/${genreId}`,
 				{
 					withCredentials: true,
 				}
 			);
-			console.log(response.data.results);
 			return response.data.results.filter(
 				(movie: Movie) => movie.adult === false
 			);
@@ -73,7 +72,7 @@ function Home({ backBaseUrl, TMDBBaseUrl }: Props) {
 	async function getTVShowsByGenre(genreId: number) {
 		try {
 			const response = await axios.get(
-				`${backBaseUrl}/api/TMDB/TV?genre=${genreId}`,
+				`${backBaseUrl}/api/TMDB/tv/genres/${genreId}`,
 				{
 					withCredentials: true,
 				}
@@ -89,7 +88,7 @@ function Home({ backBaseUrl, TMDBBaseUrl }: Props) {
 	 */
 	async function getTrendingTVShows() {
 		try {
-			const response = await axios.get(`${backBaseUrl}/api/TMDB/TV/trending`, {
+			const response = await axios.get(`${backBaseUrl}/api/TMDB/tv/trending`, {
 				withCredentials: true,
 			});
 			return response.data.results;
@@ -127,7 +126,7 @@ function Home({ backBaseUrl, TMDBBaseUrl }: Props) {
 		try {
 			setIsLoading(true);
 
-			const updatedHomeList: HomeList[] = [...homeList];
+			const updatedHomeList: ListType[] = [...homeList];
 
 			const trendingMovies: Movie[] = await getTrendingMovies();
 			if (!updatedHomeList.some((list) => list.name === 'Trending movies'))
@@ -175,19 +174,18 @@ function Home({ backBaseUrl, TMDBBaseUrl }: Props) {
 	}, [moviesGenres, TVShowsGenres]);
 
 	return (
-		<div className='wrapper home'>
+		<div className='wrapper'>
 			{isLoading ? (
 				<Loader />
 			) : (
 				homeList.map((list) => (
-					<div className='list' key={list.name}>
-						<h1>{list.name}</h1>
-						<ElementsCarousel
-							elements={list.elements}
-							TMDBBaseUrl={TMDBBaseUrl}
-							elementWidth={200}
-						/>
-					</div>
+					<List
+						key={list.name}
+						name={list.name}
+						elements={list.elements}
+						TMDBBaseUrl={TMDBBaseUrl}
+						elementWidth={200}
+					/>
 				))
 			)}
 		</div>

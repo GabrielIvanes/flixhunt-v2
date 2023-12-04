@@ -5,6 +5,7 @@ import { User } from '../../../utils/interface';
 import AuthHeader from './AuthHeader';
 import NavigationHeader from './NavigationHeader';
 import UserHeader from './UserHeader';
+import '../layout.scss';
 
 interface Props {
 	frontBaseUrl: string;

@@ -1,7 +1,5 @@
 @import './assets/styles/variables.scss';
 @import './assets/styles/auth.scss';
-@import './assets/styles/home.scss';
-@import './assets/styles/layout.scss';
 
 * {
 	padding: 0;
@@ -17,11 +15,56 @@
 .second-font {
 	font-family: $second-font, $main-font, Helvetica, sans-serif;
 }
+.clickable {
+	cursor: pointer;
+}
+@media screen and (min-width: 950) {
+	.clickable:hover {
+		color: $hover-color;
+
+		* {
+			color: $hover-color !important;
+		}
+	}
+}
+
 .wrapper {
 	width: 100%;
 	height: fit-content;
 	min-height: 100vh;
 	background-color: $background-color;
 	padding-top: 80px;
-	padding-bottom: 50px;
+	padding-bottom: 30px;
+	position: relative;
+
+	.element-details-wrapper {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		margin-bottom: 20px;
+	}
+}
+.backdrop {
+	width: 100%;
+	height: 100vh;
+	background-size: cover;
+	position: absolute;
+	top: 0;
+	z-index: 0;
+	opacity: 0.2;
+}
+
+::-webkit-scrollbar {
+	width: 10px;
+	height: 13px;
+}
+
+::-webkit-scrollbar-thumb {
+	background: #666;
+	border-radius: 20px;
+}
+
+::-webkit-scrollbar-track {
+	background: #ddd;
+	border-radius: 20px;
 }
