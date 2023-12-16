@@ -11,6 +11,7 @@ import {
 	ElementList,
 } from '../../utils/interface';
 import ElementPage from '../../components/element-page/ElementPage';
+import Loader from '../../components/loader/Loader';
 
 interface Props {
 	backBaseUrl: string;
@@ -253,44 +254,45 @@ function TV({ backBaseUrl, TMDBBaseUrl, elementsId, setElementsId }: Props) {
 		}
 	}, [TVShow]);
 
-	return (
-		TVShow && (
-			<ElementPage
-				elementId={TVShow.id}
-				elementBackdropPath={
-					TVShow.backdrop_path &&
-					`${TMDBBaseUrl}original${TVShow.backdrop_path}`
-				}
-				elementCreatorsOrDirectors={creators}
-				elementDate={
-					TVShow.first_air_date.slice(0, 4) +
-					' - ' +
-					TVShow.last_air_date.slice(0, 4)
-				}
-				elementDuration={null}
-				elementGenres={TVShow.genres}
-				elementLists={lists}
-				elementMedia='tv'
-				elementName={TVShow.name}
-				elementNumberEpisodes={TVShow.number_of_episodes}
-				elementNumberSeasons={TVShow.number_of_seasons}
-				elementOverview={TVShow.overview}
-				elementPoster={
-					TVShow.poster_path && `${TMDBBaseUrl}original${TVShow.poster_path}`
-				}
-				elementProviders={providers}
-				elementRating={
-					TVShow.vote_average > 0
-						? Math.round(TVShow.vote_average * 1e1) / 1e1
-						: null
-				}
-				elementTagline={TVShow.tagline}
-				elementParents={null}
-				trailer={trailer ? trailer : null}
-				elementsId={elementsId}
-				setElementsId={setElementsId}
-			/>
-		)
+	return TVShow ? (
+		<ElementPage
+			elementId={TVShow.id}
+			elementBackdropPath={
+				TVShow.backdrop_path && `${TMDBBaseUrl}original${TVShow.backdrop_path}`
+			}
+			elementCreatorsOrDirectors={creators}
+			elementDate={
+				TVShow.first_air_date &&
+				TVShow.first_air_date.slice(0, 4) + ' - ' + TVShow.last_air_date &&
+				TVShow.last_air_date.slice(0, 4)
+			}
+			elementDuration={null}
+			elementGenres={TVShow.genres}
+			elementLists={lists}
+			elementMedia='tv'
+			elementName={TVShow.name}
+			elementNumberEpisodes={TVShow.number_of_episodes}
+			elementNumberSeasons={TVShow.number_of_seasons}
+			elementOverview={TVShow.overview}
+			elementPoster={
+				TVShow.poster_path && `${TMDBBaseUrl}original${TVShow.poster_path}`
+			}
+			elementPosterHeight={500}
+			elementPosterWidth={333}
+			elementProviders={providers}
+			elementRating={
+				TVShow.vote_average > 0
+					? Math.round(TVShow.vote_average * 1e1) / 1e1
+					: null
+			}
+			elementTagline={TVShow.tagline}
+			elementParents={null}
+			trailer={trailer ? trailer : null}
+			elementsId={elementsId}
+			setElementsId={setElementsId}
+		/>
+	) : (
+		<Loader />
 	);
 }
 

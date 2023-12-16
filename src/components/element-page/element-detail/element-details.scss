@@ -2,15 +2,13 @@
 
 .element-details {
 	width: 90%;
-	height: 500px;
 	display: grid;
-	grid-template-columns: 350px 1fr;
-	grid-template-rows: 500px;
 	z-index: 1;
+	position: relative;
 
-	@media screen and (max-width: 975px) {
+	@media screen and (max-width: 1000px) {
 		display: block;
-		height: fit-content;
+		height: fit-content !important;
 
 		.right {
 			margin-left: 0 !important;
@@ -63,8 +61,8 @@
 
 	.left {
 		display: flex;
-		justify-content: center;
 		align-items: center;
+		justify-content: center;
 	}
 
 	.right {
@@ -96,6 +94,7 @@
 			max-height: 250px;
 			overflow-y: auto;
 			padding-right: 5px;
+			height: auto;
 		}
 		.overview {
 			overflow-y: auto;
@@ -148,6 +147,15 @@
 					margin-right: 0;
 				}
 			}
+		}
+	}
+}
+
+.element-details.episode {
+	@media screen and (max-width: 600px) {
+		.left .poster-element {
+			height: auto;
+			width: 100%;
 		}
 	}
 }

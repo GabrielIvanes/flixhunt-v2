@@ -4,10 +4,10 @@ import axios from 'axios';
 
 import {
 	Crew,
-	ElementList,
-	MovieDetails,
-	Provider,
 	VideoItem,
+	TVShowDetails,
+	ElementList,
+	EpisodeDetails,
 } from '../../utils/interface';
 import ElementPage from '../../components/element-page/ElementPage';
 import Loader from '../../components/loader/Loader';
@@ -19,52 +19,71 @@ interface Props {
 	setElementsId: (elementsId: number[]) => void;
 }
 
-function Movie({ backBaseUrl, TMDBBaseUrl, elementsId, setElementsId }: Props) {
-	const { id } = useParams();
-	const [movie, setMovie] = useState<MovieDetails>();
-	const [trailer, setTrailer] = useState<VideoItem>();
-	const [directors, setDirectors] = useState<Crew[]>([]);
-	const [providers, setProviders] = useState<Provider[]>([]);
+function Episode({
+	backBaseUrl,
+	TMDBBaseUrl,
+	elementsId,
+	setElementsId,
+}: Props) {
+	const { id, nbSeason, nbEpisode } = useParams();
+	const [TVShow, setTVShow] = useState<TVShowDetails>();
+	const [episode, setEpisode] = useState<EpisodeDetails>();
 	const [lists, setLists] = useState<ElementList[]>([]);
+	const [trailer, setTrailer] = useState<VideoItem>();
 
-	async function getMovieDetails(movieId: number) {
+	async function getEpisodeDetails(
+		TVId: number,
+		nbSeason: number,
+		nbEpisode: number
+	) {
 		try {
 			const response = await axios.get(
-				`${backBaseUrl}/api/TMDB/movies/${movieId}`,
+				`${backBaseUrl}/api/TMDB/tv/${TVId}/seasons/${nbSeason}/episodes/${nbEpisode}`,
 				{
 					withCredentials: true,
 				}
 			);
 			console.log(response.data);
-			setMovie(response.data);
+			setEpisode(response.data);
+		} catch (err) {
+			console.error(err);
+		}
+	}
+
+	async function getTVDetails(TVId: number) {
+		try {
+			const response = await axios.get(`${backBaseUrl}/api/TMDB/tv/${TVId}`, {
+				withCredentials: true,
+			});
+			setTVShow(response.data);
 		} catch (err) {
 			console.error(err);
 		}
 	}
 
 	useEffect(() => {
-		if (id) {
-			const movieId = parseInt(id);
+		if (id && nbSeason && nbEpisode) {
+			const TVId = parseInt(id);
+			const season = parseInt(nbSeason);
+			const episode = parseInt(nbEpisode);
 
-			if (movieId !== elementsId[0]) setElementsId([movieId]);
+			if (
+				elementsId.length === 1 ||
+				elementsId.length === 2 ||
+				(TVId !== elementsId[0] &&
+					season !== elementsId[1] &&
+					episode !== elementsId[2])
+			)
+				setElementsId([TVId, season, episode]);
 
-			getMovieDetails(movieId);
+			getTVDetails(TVId);
+			getEpisodeDetails(TVId, season, episode);
 		}
-	}, [id]);
+	}, [id, nbSeason, nbEpisode]);
 
 	useEffect(() => {
-		if (movie) {
-			/**
-			 * We define the directors' array before modifying the crew members' array.
-			 */
-			setDirectors(
-				movie.credits.crew.filter((person) => person.job === 'Director')
-			);
-
-			/**
-			 * We first filter videos to search for YouTube trailers.
-			 */
-			let videosTrailer: VideoItem[] = movie.videos.results.filter(
+		if (episode) {
+			let videosTrailer: VideoItem[] = episode.videos.results.filter(
 				(video) => video.type === 'Trailer' && video.site === 'YouTube'
 			);
 
@@ -98,13 +117,13 @@ function Movie({ backBaseUrl, TMDBBaseUrl, elementsId, setElementsId }: Props) {
 			}
 
 			/**
-			 * TMDB provides as many lines in the 'crew' array as a person on the team has roles in the movie.
+			 * TMDB provides as many lines in the 'crew' array as a person on the team has roles in the TV show.
 			 * Here, I redefine the crew array by adding the different jobs a person had on the set.
 			 */
 			const filteredCrew: Crew[] = [];
 			const ids: number[] = [];
 
-			for (const crewMember of movie.credits.crew) {
+			for (const crewMember of episode.credits.crew) {
 				if (!ids.includes(crewMember.id)) {
 					ids.push(crewMember.id);
 					filteredCrew.push(crewMember);
@@ -118,32 +137,24 @@ function Movie({ backBaseUrl, TMDBBaseUrl, elementsId, setElementsId }: Props) {
 				}
 			}
 
-			/**
-			 * We sort providers to keep only those offering the film for streaming in France
-			 * Need to be change to show providers depending on the country of the user (I'm French ;))
-			 */
-			const filteredProvider: Provider[] = [];
-			if (
-				movie['watch/providers'].results.FR &&
-				movie['watch/providers'].results.FR.flatrate
-			) {
-				movie['watch/providers'].results.FR.flatrate.map((provider) => {
-					/**
-					 * Here we change to logo path to not have to transmit the TMDBBaseUrl
-					 */
-					provider.logo_path = `${TMDBBaseUrl}original${provider.logo_path}`;
-					filteredProvider.push(provider);
-				});
-			}
-			setProviders(filteredProvider);
-
 			const listsTmp: ElementList[] = [];
 
-			movie.credits.cast.length > 0 &&
+			episode.images.stills.length > 0 &&
+				listsTmp.push({
+					list: {
+						name: 'Images',
+						elements: episode.images.stills,
+					},
+					elementWidth: 150 * (16 / 9),
+					elementHeight: 150,
+					TMDBBaseUrl: TMDBBaseUrl,
+				});
+
+			episode.credits.cast.length > 0 &&
 				listsTmp.push({
 					list: {
 						name: 'Cast',
-						elements: movie.credits.cast,
+						elements: episode.credits.cast,
 					},
 					elementWidth: 200,
 					elementHeight: 200 * (3 / 2),
@@ -161,50 +172,48 @@ function Movie({ backBaseUrl, TMDBBaseUrl, elementsId, setElementsId }: Props) {
 					TMDBBaseUrl: TMDBBaseUrl,
 				});
 
-			movie.recommendations.total_results > 0 &&
-				listsTmp.push({
-					list: {
-						name: 'Recommendation',
-						elements: movie.recommendations.results,
-					},
-					elementWidth: 200,
-					elementHeight: 200 * (3 / 2),
-					TMDBBaseUrl: TMDBBaseUrl,
-				});
-
 			setLists(listsTmp);
 		}
-	}, [movie]);
+	}, [episode]);
 
-	return movie ? (
+	return episode && nbSeason && TVShow ? (
 		<ElementPage
-			elementId={movie.id}
+			elementId={episode.id}
 			elementBackdropPath={
-				movie.backdrop_path && `${TMDBBaseUrl}original${movie.backdrop_path}`
+				TVShow.backdrop_path && `${TMDBBaseUrl}original${TVShow.backdrop_path}`
 			}
-			elementCreatorsOrDirectors={directors}
-			elementDate={movie.release_date.slice(0, 4)}
-			elementDuration={movie.runtime}
-			elementGenres={movie.genres}
+			elementCreatorsOrDirectors={null}
+			elementDate={episode.air_date}
+			elementDuration={episode.runtime}
+			elementGenres={null}
 			elementLists={lists}
-			elementMedia='tv'
-			elementName={movie.title}
+			elementMedia='episode'
+			elementName={episode.name}
 			elementNumberEpisodes={null}
 			elementNumberSeasons={null}
-			elementOverview={movie.overview}
+			elementParents={[
+				{
+					name: TVShow.name,
+					number: TVShow.id,
+				},
+				{
+					name: `Season ${nbSeason}`,
+					number: parseInt(nbSeason),
+				},
+			]}
+			elementOverview={episode.overview}
 			elementPoster={
-				movie.poster_path && `${TMDBBaseUrl}original${movie.poster_path}`
+				episode.still_path && `${TMDBBaseUrl}original${episode.still_path}`
 			}
-			elementPosterHeight={500}
-			elementPosterWidth={333}
-			elementProviders={providers}
-			elementRating={
-				movie.vote_average > 0
-					? Math.round(movie.vote_average * 1e1) / 1e1
-					: null
+			elementPosterHeight={
+				window.innerWidth > 600 ? 337.5 : (window.innerWidth - 10) * (9 / 16)
 			}
-			elementTagline={movie.tagline}
-			elementParents={null}
+			elementPosterWidth={
+				window.innerWidth > 600 ? 600 : window.innerWidth - 10
+			}
+			elementProviders={null}
+			elementRating={null}
+			elementTagline={null}
 			trailer={trailer ? trailer : null}
 			elementsId={elementsId}
 			setElementsId={setElementsId}
@@ -214,4 +223,4 @@ function Movie({ backBaseUrl, TMDBBaseUrl, elementsId, setElementsId }: Props) {
 	);
 }
 
-export default Movie;
+export default Episode;

@@ -11,6 +11,7 @@ import {
 	ElementList,
 } from '../../utils/interface';
 import ElementPage from '../../components/element-page/ElementPage';
+import Loader from '../../components/loader/Loader';
 
 interface Props {
 	backBaseUrl: string;
@@ -153,7 +154,7 @@ function Season({
 						name: 'Episodes',
 						elements: season.episodes,
 					},
-					elementWidth: 266.7,
+					elementWidth: 150 * (16 / 9),
 					elementHeight: 150,
 					TMDBBaseUrl: TMDBBaseUrl,
 				});
@@ -184,44 +185,46 @@ function Season({
 		}
 	}, [season]);
 
-	return (
-		season &&
-		TVShow && (
-			<ElementPage
-				elementId={season.id}
-				elementBackdropPath={
-					TVShow.backdrop_path &&
-					`${TMDBBaseUrl}original${TVShow.backdrop_path}`
-				}
-				elementCreatorsOrDirectors={null}
-				elementDate={season.air_date}
-				elementDuration={null}
-				elementGenres={null}
-				elementLists={lists}
-				elementMedia='season'
-				elementName={season.name}
-				elementNumberEpisodes={
-					season.episodes.length > 0 ? season.episodes.length : null
-				}
-				elementNumberSeasons={null}
-				elementParents={[
-					{
-						name: TVShow.name,
-						number: TVShow.id,
-					},
-				]}
-				elementOverview={season.overview}
-				elementPoster={
-					season.poster_path && `${TMDBBaseUrl}original${season.poster_path}`
-				}
-				elementProviders={providers}
-				elementRating={null}
-				elementTagline={null}
-				trailer={trailer ? trailer : null}
-				elementsId={elementsId}
-				setElementsId={setElementsId}
-			/>
-		)
+	return season && TVShow ? (
+		<ElementPage
+			elementId={season.id}
+			elementBackdropPath={
+				TVShow.backdrop_path && `${TMDBBaseUrl}original${TVShow.backdrop_path}`
+			}
+			elementCreatorsOrDirectors={null}
+			elementDate={season.air_date}
+			elementDuration={null}
+			elementGenres={null}
+			elementLists={lists}
+			elementMedia='season'
+			elementName={season.name}
+			elementNumberEpisodes={
+				season.episodes.length > 0 ? season.episodes.length : null
+			}
+			elementNumberSeasons={null}
+			elementParents={[
+				{
+					name: TVShow.name,
+					number: TVShow.id,
+				},
+			]}
+			elementOverview={season.overview}
+			elementPoster={
+				season.poster_path && `${TMDBBaseUrl}original${season.poster_path}`
+			}
+			elementPosterHeight={500}
+			elementPosterWidth={333}
+			elementProviders={providers}
+			elementRating={null}
+			elementTagline={null}
+			trailer={trailer ? trailer : null}
+			elementsId={elementsId}
+			setElementsId={setElementsId}
+		/>
+	) : (
+		<div className='wrapper'>
+			<Loader />
+		</div>
 	);
 }
 

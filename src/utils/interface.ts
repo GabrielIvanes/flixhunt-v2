@@ -38,6 +38,7 @@ export interface Movie {
 	vote_average: number;
 	vote_count: number;
 }
+
 export interface TVShow {
 	adult: boolean | null;
 	backdrop_path: string;
@@ -60,7 +61,7 @@ export type ElementType = Movie | TVShow | Person | Season | Episode;
 
 export interface ListType {
 	name: string;
-	elements: ElementType[];
+	elements: ElementType[] | Image[];
 }
 
 interface BelongsToCollection {
@@ -356,4 +357,66 @@ export interface ElementList {
 	TMDBBaseUrl: string;
 	elementWidth: number;
 	elementHeight: number;
+}
+
+export interface Image {
+	aspect_ratio: number;
+	height: number;
+	iso_639_1: string;
+	file_path: string;
+	vote_average: number;
+	vote_count: number;
+	width: number;
+}
+
+export interface EpisodeDetails {
+	air_date: string;
+	crew: Crew[];
+	episode_number: number;
+	guest_stars: Cast[] | null;
+	name: string;
+	overview: string;
+	id: number;
+	production_code: string;
+	runtime: number;
+	season_number: number;
+	still_path: string | null;
+	vote_average: number;
+	vote_count: number;
+	credits: {
+		cast: Cast[];
+		crew: Crew[];
+		guest_stars: Cast[];
+	};
+	images: {
+		stills: Image[];
+	};
+	videos: {
+		results: VideoItem[];
+	};
+}
+
+export interface MoviesByPage {
+	page: number;
+	results: Movie[];
+	total_pages: number;
+	total_results: number;
+}
+
+export interface TVShowsByPage {
+	page: number;
+	results: TVShow[];
+	total_pages: number;
+	total_results: number;
+}
+
+export interface Filters {
+	genres: Genre[];
+	date: string | null;
+	date_gte: string | null;
+	date_lte: string | null;
+	vote_gte: number;
+	vote_lte: number | null;
+	rate_gte: number | null;
+	rate_lte: number | null;
 }

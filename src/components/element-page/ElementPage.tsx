@@ -3,6 +3,8 @@ import { useState } from 'react';
 import ElementDetails from './element-detail/ElementDetails';
 import Trailer from './trailer/Trailer';
 import List from '../list/List';
+// import GoBack from '../goBack/GoBack';
+
 import {
 	Crew,
 	ElementList,
@@ -25,11 +27,13 @@ interface Props {
 	elementProviders: Provider[] | null;
 	elementRating: number | null;
 	elementTagline: string | null;
-	elementMedia: 'movie' | 'tv' | 'season';
+	elementMedia: 'movie' | 'tv' | 'season' | 'episode';
 	elementLists: ElementList[] | null;
 	elementNumberSeasons: number | null;
 	elementNumberEpisodes: number | null;
 	elementParents: ElementParent[] | null;
+	elementPosterHeight: number;
+	elementPosterWidth: number;
 	trailer: VideoItem | null;
 	elementsId: number[];
 	setElementsId: (elementsId: number[]) => void;
@@ -53,6 +57,8 @@ function ElementPage({
 	elementNumberEpisodes,
 	elementParents,
 	elementLists,
+	elementPosterWidth,
+	elementPosterHeight,
 	trailer,
 	elementsId,
 	setElementsId,
@@ -68,6 +74,7 @@ function ElementPage({
 					: { overflow: 'visible', height: 'fit-content' }
 			}
 		>
+			{/* {window.innerWidth < 650 && <GoBack />} */}
 			{elementBackdropPath && (
 				<div
 					className='backdrop'
@@ -79,6 +86,7 @@ function ElementPage({
 			{trailer && showTrailer && (
 				<Trailer trailer={trailer} setShowTrailer={setShowTrailer} />
 			)}
+
 			<section className='element-details-wrapper'>
 				<ElementDetails
 					elementId={elementId}
@@ -95,6 +103,8 @@ function ElementPage({
 					elementShowNumberEpisodes={elementNumberEpisodes}
 					elementShowNumberSeasons={elementNumberSeasons}
 					elementParents={elementParents}
+					elementPosterHeight={elementPosterHeight}
+					elementPosterWidth={elementPosterWidth}
 					isElementHaveTrailer={trailer ? true : false}
 					media={elementMedia}
 					setShowTrailer={setShowTrailer}

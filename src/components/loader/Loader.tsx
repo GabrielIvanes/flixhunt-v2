@@ -3,7 +3,7 @@ import './loader.css';
 
 function Loader() {
 	return (
-		<div className='loader-wrapper'>
+		<div className='loader-wrapper wrapper'>
 			<img src={loader} alt='loader' />
 		</div>
 	);

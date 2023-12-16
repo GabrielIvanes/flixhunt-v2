@@ -1,11 +1,11 @@
-import { ElementType } from '../../utils/interface';
+import { ElementType, Image } from '../../utils/interface';
 import ElementsCarousel from './carousel/ElementsCarousel';
 import './list.scss';
 
 interface Props {
 	name: string;
 	TMDBBaseUrl: string;
-	elements: ElementType[];
+	elements: ElementType[] | Image[];
 	elementWidth: number;
 	elementHeight: number;
 }

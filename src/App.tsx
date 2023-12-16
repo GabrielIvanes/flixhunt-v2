@@ -9,6 +9,9 @@ import Header from './components/layout/header/Header';
 import Movie from './pages/movie/Movie';
 import TV from './pages/tv/TV';
 import Season from './pages/season/Season';
+import Episode from './pages/episode/Episode';
+import TopRatedMovies from './pages/top-rated-movies/TopRated';
+import TopRatedTv from './pages/top-rated-tv/TopRated';
 
 function App() {
 	const frontBaseUrl = 'http://localhost:5173';
@@ -81,6 +84,32 @@ function App() {
 								elementsId={elementsId}
 								setElementsId={setElementsId}
 							/>
+						}
+					/>
+					<Route
+						path='/tv/:id/seasons/:nbSeason/episodes/:nbEpisode'
+						element={
+							<Episode
+								backBaseUrl={backBaseUrl}
+								TMDBBaseUrl={TMDBBaseUrl}
+								elementsId={elementsId}
+								setElementsId={setElementsId}
+							/>
+						}
+					/>
+					<Route
+						path='/movies'
+						element={
+							<TopRatedMovies
+								backBaseUrl={backBaseUrl}
+								TMDBBaseUrl={TMDBBaseUrl}
+							/>
+						}
+					/>
+					<Route
+						path='/tv'
+						element={
+							<TopRatedTv backBaseUrl={backBaseUrl} TMDBBaseUrl={TMDBBaseUrl} />
 						}
 					/>
 				</Routes>

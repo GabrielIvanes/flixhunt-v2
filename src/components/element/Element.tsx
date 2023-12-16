@@ -28,7 +28,10 @@ function Element({
 	const navigate = useNavigate();
 
 	function handleElementClick() {
-		elementNavigation && navigate(elementNavigation);
+		if (elementNavigation) {
+			navigate(elementNavigation);
+			window.scrollTo(0, 0);
+		}
 	}
 
 	return (
@@ -45,9 +48,12 @@ function Element({
 					src={elementPoster}
 					alt={elementName ? elementName : elementId.toString()}
 					className='poster-element'
-					style={scrollPosition !== null ? { cursor: 'pointer' } : {}}
-					width={posterWidth}
-					height={posterHeight}
+					style={{
+						width: `${posterWidth}px`,
+						height: `${posterHeight}px`,
+						fontSize: `${posterWidth / 3}px`,
+						...(elementNavigation !== null ? { cursor: 'pointer' } : {}),
+					}}
 					onClick={handleElementClick}
 				/>
 			) : (
@@ -57,7 +63,7 @@ function Element({
 						width: `${posterWidth}px`,
 						height: `${posterHeight}px`,
 						fontSize: `${posterWidth / 3}px`,
-						...(scrollPosition !== null ? { cursor: 'pointer' } : {}),
+						...(elementNavigation !== null ? { cursor: 'pointer' } : {}),
 					}}
 					onClick={handleElementClick}
 				>

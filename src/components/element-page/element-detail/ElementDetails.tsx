@@ -29,8 +29,10 @@ interface Props {
 	elementShowNumberSeasons: number | null;
 	elementShowNumberEpisodes: number | null;
 	elementParents: ElementParent[] | null;
+	elementPosterHeight: number;
+	elementPosterWidth: number;
 	isElementHaveTrailer: boolean;
-	media: 'movie' | 'tv' | 'season';
+	media: 'movie' | 'tv' | 'season' | 'episode';
 	setShowTrailer: (bool: boolean) => void;
 	elementsId: number[];
 	setElementsId: (elementsId: number[]) => void;
@@ -51,6 +53,8 @@ function ElementDetails({
 	elementShowNumberEpisodes,
 	elementShowNumberSeasons,
 	elementParents,
+	elementPosterWidth,
+	elementPosterHeight,
 	elementsId,
 	setElementsId,
 	media,
@@ -64,21 +68,27 @@ function ElementDetails({
 		const hour = Math.floor(minutes / 60);
 		const minute = minutes % 60;
 		const minuteString = minute >= 10 ? `${minute}` : `0${minute}`;
-		return `${hour}h ${minuteString}m`;
+		if (hour > 0) {
+			return `${hour}h ${minuteString}m`;
+		} else {
+			return `${minuteString} min`;
+		}
 	}
 
-	function navigateToParent() {
-		if (elementParents && elementParents.length > 0) {
-			if (elementParents.length === 1)
+	function navigateToParent(index: number) {
+		let elementsIdTmp: number[] = [...elementsId];
+		if (elementParents) {
+			if (index === 0) {
 				navigate(`/tv/${elementParents[0].number}`);
-			else if (elementParents.length === 2)
+				elementsIdTmp = [elementParents[0].number];
+			} else if (index === 1) {
 				navigate(
 					`/tv/${elementParents[0].number}/seasons/${elementParents[1].number}`
 				);
-			const elementsIdTmp: number[] = [...elementsId];
-			elementsIdTmp.pop();
-			setElementsId(elementsIdTmp);
+				elementsIdTmp.pop();
+			}
 		}
+		setElementsId(elementsIdTmp);
 	}
 
 	window.addEventListener('resize', () => {
@@ -86,7 +96,14 @@ function ElementDetails({
 	});
 
 	return (
-		<div className='element-details'>
+		<div
+			className={`element-details ${media}`}
+			style={{
+				// height: `${elementPosterHeight + 10}px`,
+				height: 'fit-content',
+				gridTemplateColumns: `${elementPosterWidth + 10}px 1fr`,
+			}}
+		>
 			<div className='left'>
 				<Element
 					elementId={elementId}
@@ -94,8 +111,8 @@ function ElementDetails({
 					elementPoster={elementPoster}
 					elementAdditionalInformation={null}
 					elementNavigation={null}
-					posterWidth={333}
-					posterHeight={500}
+					posterWidth={elementPosterWidth}
+					posterHeight={elementPosterHeight}
 					scrollPosition={null}
 				/>
 			</div>
@@ -106,12 +123,12 @@ function ElementDetails({
 							<span
 								key={index}
 								className='clickable'
-								onClick={navigateToParent}
+								onClick={() => navigateToParent(index)}
 							>
-								{elementParent.name}
+								{elementParent.name} -{' '}
 							</span>
 						))}
-						<span> - {elementName}</span>
+						<span>{elementName}</span>
 					</h1>
 				) : (
 					<h1>{elementName}</h1>

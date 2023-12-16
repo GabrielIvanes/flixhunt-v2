@@ -1,0 +1,45 @@
+.top-rated {
+	font-size: 20px;
+	padding: 0 20px;
+
+	@media screen and (max-width: 1000px) {
+		.element {
+			font-size: 15px;
+		}
+	}
+
+	section {
+		display: flex;
+		justify-content: center;
+		flex-wrap: wrap;
+		text-align: center;
+
+		> div {
+			margin: 5px 10px;
+		}
+	}
+
+	.filters-button-wrapper {
+		display: flex;
+		justify-content: right;
+		margin-right: 10px;
+
+		.filters-button {
+			border: 1px solid #fff;
+			border-radius: 8px;
+			padding: 5px 10px;
+			background-color: transparent;
+			font-size: 18px;
+			margin-bottom: 20px;
+
+			span {
+				margin-right: 5px;
+			}
+		}
+	}
+
+	.error-no-data {
+		width: 100%;
+		text-align: center;
+	}
+}

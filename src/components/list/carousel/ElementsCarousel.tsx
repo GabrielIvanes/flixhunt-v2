@@ -11,12 +11,13 @@ import {
 	TVShow,
 	Season,
 	Episode,
+	Image,
 } from '../../../utils/interface';
 import './elementsCarousel.scss';
 import Element from '../../element/Element';
 
 interface Props {
-	elements: ElementType[];
+	elements: ElementType[] | Image[];
 	TMDBBaseUrl: string;
 	elementWidth: number;
 	elementHeight: number;
@@ -84,110 +85,138 @@ function ElementsCarousel({
 
 	return (
 		<div className='elements-carousel' ref={carouselScroll}>
-			{elements.map((element) => (
-				<React.Fragment key={element.id}>
-					{Object.prototype.hasOwnProperty.call(element, 'title') ? (
+			{elements.map((element, index) =>
+				Object.prototype.hasOwnProperty.call(element, 'id') ? (
+					<React.Fragment key={(element as ElementType).id}>
+						{Object.prototype.hasOwnProperty.call(element, 'title') ? (
+							<Element
+								elementId={(element as ElementType).id}
+								elementName={(element as Movie).title}
+								elementPoster={
+									(element as Movie).poster_path &&
+									`${TMDBBaseUrl}original${(element as Movie).poster_path}`
+								}
+								elementAdditionalInformation={(element as Movie).release_date}
+								elementNavigation={`/movies/${(element as ElementType).id}`}
+								posterHeight={elementHeight}
+								posterWidth={elementWidth}
+								scrollPosition={scrollPosition}
+							/>
+						) : Object.prototype.hasOwnProperty.call(
+								element,
+								'known_for_department'
+						  ) ? (
+							<Element
+								elementId={(element as ElementType).id}
+								elementName={(element as Person).name}
+								elementPoster={
+									(element as Person).profile_path &&
+									`${TMDBBaseUrl}original${(element as Person).profile_path}`
+								}
+								elementAdditionalInformation={
+									(element as Cast).character || (element as Crew).job
+								}
+								elementNavigation={null}
+								posterHeight={elementHeight}
+								posterWidth={elementWidth}
+								scrollPosition={scrollPosition}
+							/>
+						) : Object.prototype.hasOwnProperty.call(
+								element,
+								'episode_number'
+						  ) ? (
+							<Element
+								elementId={(element as ElementType).id}
+								elementName={(element as Episode).name}
+								elementPoster={
+									(element as Episode).still_path &&
+									`${TMDBBaseUrl}original${(element as Episode).still_path}`
+								}
+								elementAdditionalInformation={`#Episode ${
+									(element as Episode).episode_number
+								}`}
+								elementNavigation={`episodes/${
+									(element as Episode).episode_number
+								}`}
+								posterHeight={elementHeight}
+								posterWidth={elementWidth}
+								scrollPosition={scrollPosition}
+							/>
+						) : Object.prototype.hasOwnProperty.call(
+								element,
+								'season_number'
+						  ) ? (
+							<Element
+								elementId={(element as ElementType).id}
+								elementName={(element as Season).name}
+								elementPoster={
+									(element as Season).poster_path &&
+									`${TMDBBaseUrl}original${(element as Season).poster_path}`
+								}
+								elementAdditionalInformation={
+									(element as Season).air_date
+										? (element as Season).air_date.slice(0, 4)
+										: null
+								}
+								elementNavigation={`seasons/${
+									(element as Season).season_number
+								}`}
+								posterHeight={elementHeight}
+								posterWidth={elementWidth}
+								scrollPosition={scrollPosition}
+							/>
+						) : (
+							<Element
+								elementId={(element as ElementType).id}
+								elementName={(element as TVShow).name}
+								elementPoster={
+									(element as TVShow).poster_path &&
+									`${TMDBBaseUrl}original${(element as TVShow).poster_path}`
+								}
+								elementAdditionalInformation={
+									(element as TVShow).first_air_date
+								}
+								elementNavigation={`/tv/${(element as ElementType).id}`}
+								posterHeight={elementHeight}
+								posterWidth={elementWidth}
+								scrollPosition={scrollPosition}
+							/>
+						)}
+					</React.Fragment>
+				) : (
+					<React.Fragment key={index}>
 						<Element
-							elementId={element.id}
-							elementName={(element as Movie).title}
+							elementId={index}
+							elementName={null}
 							elementPoster={
-								(element as Movie).poster_path &&
-								`${TMDBBaseUrl}original${(element as Movie).poster_path}`
+								(element as Image).file_path &&
+								`${TMDBBaseUrl}original${(element as Image).file_path}`
 							}
-							elementAdditionalInformation={(element as Movie).release_date}
-							elementNavigation={`/movies/${element.id}`}
-							posterHeight={elementHeight}
-							posterWidth={elementWidth}
-							scrollPosition={scrollPosition}
-						/>
-					) : Object.prototype.hasOwnProperty.call(
-							element,
-							'known_for_department'
-							// eslint-disable-next-line no-mixed-spaces-and-tabs
-					  ) ? (
-						<Element
-							elementId={element.id}
-							elementName={(element as Person).name}
-							elementPoster={
-								(element as Person).profile_path &&
-								`${TMDBBaseUrl}original${(element as Person).profile_path}`
-							}
-							elementAdditionalInformation={
-								(element as Cast).character || (element as Crew).job
-							}
+							elementAdditionalInformation={null}
 							elementNavigation={null}
 							posterHeight={elementHeight}
 							posterWidth={elementWidth}
 							scrollPosition={scrollPosition}
 						/>
-					) : Object.prototype.hasOwnProperty.call(
-							element,
-							'episode_number'
-					  ) ? (
-						<Element
-							elementId={element.id}
-							elementName={(element as Episode).name}
-							elementPoster={
-								(element as Episode).still_path &&
-								`${TMDBBaseUrl}original${(element as Episode).still_path}`
-							}
-							elementAdditionalInformation={`#Episode ${
-								(element as Episode).episode_number
-							}`}
-							elementNavigation={null}
-							posterHeight={elementHeight}
-							posterWidth={elementWidth}
-							scrollPosition={scrollPosition}
-						/>
-					) : Object.prototype.hasOwnProperty.call(element, 'season_number') ? (
-						<Element
-							elementId={element.id}
-							elementName={(element as Season).name}
-							elementPoster={
-								(element as Season).poster_path &&
-								`${TMDBBaseUrl}original${(element as Season).poster_path}`
-							}
-							elementAdditionalInformation={`#Season ${
-								(element as Season).season_number
-							}`}
-							elementNavigation={`seasons/${(element as Season).season_number}`}
-							posterHeight={elementHeight}
-							posterWidth={elementWidth}
-							scrollPosition={scrollPosition}
-						/>
-					) : (
-						<Element
-							elementId={element.id}
-							elementName={(element as TVShow).name}
-							elementPoster={
-								(element as TVShow).poster_path &&
-								`${TMDBBaseUrl}original${(element as TVShow).poster_path}`
-							}
-							elementAdditionalInformation={(element as TVShow).first_air_date}
-							elementNavigation={`/tv/${element.id}`}
-							posterHeight={elementHeight}
-							posterWidth={elementWidth}
-							scrollPosition={scrollPosition}
-						/>
-					)}
-				</React.Fragment>
-			))}
-			{!maxReached && (
-				<button
-					onClick={next}
-					className='btn-carousel btn-next'
-					style={{ top: `${elementHeight / 2}px` }}
-				>
-					&#62;
-				</button>
+					</React.Fragment>
+				)
 			)}
 			{scrollPosition !== 0 && (
 				<button
 					onClick={prev}
 					className='btn-carousel btn-prev'
-					style={{ top: `${elementHeight / 2}px` }}
+					style={{ top: `${elementHeight / 2.0 - 10}px` }}
 				>
 					&#60;
+				</button>
+			)}
+			{!maxReached && (
+				<button
+					onClick={next}
+					className='btn-carousel btn-next'
+					style={{ top: `${elementHeight / 2.0 - 10}px` }}
+				>
+					&#62;
 				</button>
 			)}
 		</div>

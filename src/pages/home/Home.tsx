@@ -125,7 +125,6 @@ function Home({ backBaseUrl, TMDBBaseUrl }: Props) {
 	) {
 		try {
 			setIsLoading(true);
-
 			const updatedHomeList: ListType[] = [...homeList];
 
 			const trendingMovies: Movie[] = await getTrendingMovies();
@@ -173,22 +172,21 @@ function Home({ backBaseUrl, TMDBBaseUrl }: Props) {
 		}
 	}, [moviesGenres, TVShowsGenres]);
 
-	return (
+	return !isLoading ? (
 		<div className='wrapper'>
-			{isLoading ? (
-				<Loader />
-			) : (
-				homeList.map((list) => (
-					<List
-						key={list.name}
-						name={list.name}
-						elements={list.elements}
-						TMDBBaseUrl={TMDBBaseUrl}
-						elementWidth={200}
-					/>
-				))
-			)}
+			{homeList.map((list) => (
+				<List
+					key={list.name}
+					name={list.name}
+					elements={list.elements}
+					TMDBBaseUrl={TMDBBaseUrl}
+					elementWidth={200}
+					elementHeight={300}
+				/>
+			))}
 		</div>
+	) : (
+		<Loader />
 	);
 }
 

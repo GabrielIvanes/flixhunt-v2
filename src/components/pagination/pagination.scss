@@ -1,0 +1,27 @@
+@import '../../assets/styles/variables.scss';
+
+.pagination {
+	margin-top: 20px;
+	display: flex;
+	width: 100%;
+	justify-content: center;
+	align-items: center;
+
+	* {
+		margin: 0 5px;
+		font-size: 15px;
+	}
+
+	button {
+		width: 40px;
+		height: 30px;
+		color: #fff;
+		background-color: $card-color;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: 8px;
+	}
+
+	.current-page {
+		box-shadow: rgba(255, 255, 255, 0.5) 0px 5px 15px;
+	}
+}
