@@ -116,7 +116,7 @@ function ElementsCarousel({
 								elementAdditionalInformation={
 									(element as Cast).character || (element as Crew).job
 								}
-								elementNavigation={null}
+								elementNavigation={`/persons/${(element as Person).id}`}
 								posterHeight={elementHeight}
 								posterWidth={elementWidth}
 								scrollPosition={scrollPosition}

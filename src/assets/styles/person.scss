@@ -1,0 +1,97 @@
+.person {
+	display: grid;
+	grid-template-columns: 350px 1fr;
+	padding: 0 50px;
+
+	@media screen and (max-width: 1000px) {
+		display: flex;
+		flex-direction: column;
+		padding: 0;
+
+		.left {
+			display: flex;
+			align-items: center;
+			flex-direction: column;
+			margin-bottom: 20px;
+		}
+
+		.right {
+			.media {
+				justify-content: center !important;
+
+				> div {
+					font-size: 15px !important;
+				}
+			}
+		}
+	}
+
+	.left {
+		h2 {
+			margin: 10px 0;
+		}
+
+		h3 {
+			color: $secondary-color;
+			margin: 20px 0 5px 0;
+		}
+
+		p {
+			font-size: 18px;
+		}
+	}
+
+	.right {
+		padding: 0 10px;
+
+		h1 {
+			margin-bottom: 50px;
+		}
+
+		h2 {
+			margin-bottom: 10px;
+		}
+
+		.biography p {
+			margin-bottom: 5px;
+			text-align: justify;
+		}
+
+		.filters {
+			display: flex;
+			justify-content: space-between;
+
+			select {
+				color: #000;
+				font-size: 16px;
+
+				option {
+					color: #000;
+				}
+
+				option:hover {
+					background-color: $background-color;
+					color: #000;
+				}
+			}
+		}
+
+		.media {
+			margin-top: 10px;
+			display: flex;
+			justify-content: space-between;
+			flex-wrap: wrap;
+			text-align: center;
+			column-gap: 10px;
+			width: fit-content;
+
+			> div {
+				margin-bottom: 5px;
+				font-size: 17px;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+			}
+		}
+	}
+}

@@ -91,6 +91,14 @@ function ElementDetails({
 		setElementsId(elementsIdTmp);
 	}
 
+	function handleGenreClick(genre: Genre) {
+		if (media === 'tv') {
+			navigate('/tv', { state: genre });
+		} else {
+			navigate('/movies', { state: genre });
+		}
+	}
+
 	window.addEventListener('resize', () => {
 		setRerender(window.innerWidth > 950);
 	});
@@ -152,7 +160,14 @@ function ElementDetails({
 				) : elementDirectors.length === 1 ? (
 					<>
 						<h2>{media === 'movie' ? 'Director' : 'Creator'}</h2>
-						<span className='director-creator clickable'>
+						<span
+							className='director-creator clickable'
+							onClick={() =>
+								navigate(`/persons/${elementDirectors[0].id}`, {
+									state: 'director-creator',
+								})
+							}
+						>
 							{elementDirectors[0].name}
 						</span>
 					</>
@@ -161,7 +176,14 @@ function ElementDetails({
 						<h2>{media === 'movie' ? 'Directors' : 'Creators'}</h2>
 						{elementDirectors.map((elementDirector, index) => (
 							<React.Fragment key={elementDirector.id}>
-								<span className='director-creator clickable'>
+								<span
+									className='director-creator clickable'
+									onClick={() =>
+										navigate(`/persons/${elementDirector.id}`, {
+											state: 'director-creator',
+										})
+									}
+								>
 									{elementDirector.name}
 								</span>
 								<span>{index < elementDirectors.length - 1 ? ', ' : ''}</span>
@@ -231,7 +253,11 @@ function ElementDetails({
 					(_ ? (
 						<div className='row genre-laptop'>
 							{elementGenres.map((elementGenre) => (
-								<div key={elementGenre.id} className='clickable'>
+								<div
+									key={elementGenre.id}
+									className='clickable'
+									onClick={() => handleGenreClick(elementGenre)}
+								>
 									{elementGenre.name}
 								</div>
 							))}
@@ -241,7 +267,12 @@ function ElementDetails({
 							{elementGenres.length === 1 ? <h2>Genre</h2> : <h2>Genres</h2>}
 							{elementGenres.map((elementGenre, index) => (
 								<span key={elementGenre.id}>
-									<span className='clickable'>{elementGenre.name}</span>
+									<span
+										className='clickable'
+										onClick={() => handleGenreClick(elementGenre)}
+									>
+										{elementGenre.name}
+									</span>
 									<span>{index < elementGenres.length - 1 ? ', ' : ''}</span>
 								</span>
 							))}

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
+import { useLocation } from 'react-router-dom';
 
 import Element from '../../components/element/Element';
 import { Filters, Genre, MoviesByPage } from '../../utils/interface';
@@ -33,6 +34,7 @@ function TopRated({ backBaseUrl, TMDBBaseUrl }: Props) {
 	const [moviesByPage, setMoviesByPage] = useState<MoviesByPage>();
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const [_, setRender] = useState<boolean>(window.innerWidth > 1020);
+	const location = useLocation();
 
 	window.addEventListener('resize', () => {
 		setRender(window.innerWidth > 1020);
@@ -93,6 +95,15 @@ function TopRated({ backBaseUrl, TMDBBaseUrl }: Props) {
 	useEffect(() => {
 		getGenres();
 	}, []);
+
+	useEffect(() => {
+		if (location.state) {
+			const updatedFilters = { ...filters };
+			updatedFilters.genres = [...filters.genres, location.state];
+
+			setFilters(updatedFilters);
+		}
+	}, [location]);
 
 	useEffect(() => {
 		getTopRatedMovies(page, filters);

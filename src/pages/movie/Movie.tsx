@@ -187,7 +187,7 @@ function Movie({ backBaseUrl, TMDBBaseUrl, elementsId, setElementsId }: Props) {
 			elementDuration={movie.runtime}
 			elementGenres={movie.genres}
 			elementLists={lists}
-			elementMedia='tv'
+			elementMedia='movie'
 			elementName={movie.title}
 			elementNumberEpisodes={null}
 			elementNumberSeasons={null}

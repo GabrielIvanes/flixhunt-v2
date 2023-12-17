@@ -24,8 +24,10 @@ export interface Genre {
 export interface Movie {
 	adult: boolean;
 	backdrop_path: string | null;
+	department: string | null; // department of the person in the media
 	genre_ids: number[];
 	id: number;
+	job: string | null; // job of the person in the media
 	media_type: string | null;
 	original_language: string;
 	original_title: string;
@@ -42,9 +44,11 @@ export interface Movie {
 export interface TVShow {
 	adult: boolean | null;
 	backdrop_path: string;
+	department: string | null; // department of the person in the media
 	first_air_date: string;
 	genre_ids: number[];
 	id: number;
+	job: string | null; // job of the person in the media
 	media_type: string | null;
 	name: string;
 	origin_country: string[];
@@ -419,4 +423,27 @@ export interface Filters {
 	vote_lte: number | null;
 	rate_gte: number | null;
 	rate_lte: number | null;
+}
+
+export type Media = Movie | TVShow;
+
+export interface PersonDetails {
+	adult: boolean;
+	also_known_as: string[];
+	biography: string;
+	birthday: string;
+	combined_credits: {
+		cast: Media[];
+		crew: Media[];
+	};
+	deathday: string | null;
+	gender: number;
+	homepage: string | null;
+	id: number;
+	imdb_id: string;
+	known_for_department: string;
+	name: string;
+	place_of_birth: string;
+	popularity: number;
+	profile_path: string | null;
 }
