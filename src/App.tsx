@@ -13,6 +13,7 @@ import Episode from './pages/episode/Episode';
 import TopRatedMovies from './pages/top-rated-movies/TopRated';
 import TopRatedTv from './pages/top-rated-tv/TopRated';
 import Person from './pages/person/Person';
+import Search from './pages/search/Search';
 
 function App() {
 	const frontBaseUrl = 'http://localhost:5173';
@@ -117,6 +118,12 @@ function App() {
 						path='/persons/:id'
 						element={
 							<Person backBaseUrl={backBaseUrl} TMDBBaseUrl={TMDBBaseUrl} />
+						}
+					/>
+					<Route
+						path='/search'
+						element={
+							<Search backBaseUrl={backBaseUrl} TMDBBaseUrl={TMDBBaseUrl} />
 						}
 					/>
 				</Routes>

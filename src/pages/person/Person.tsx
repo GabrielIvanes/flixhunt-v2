@@ -258,6 +258,7 @@ function Person({ backBaseUrl, TMDBBaseUrl }: Props) {
 								<option value='crew'>Crew</option>
 								<option value='director-creator'>Director - Creator</option>
 							</select>
+
 							<select
 								value={sortType}
 								onChange={(event) => {

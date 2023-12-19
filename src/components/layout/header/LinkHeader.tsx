@@ -10,7 +10,11 @@ function LinkHeader({ locationPathname, path, name }: Props) {
 	return (
 		<Link
 			to={`${path}`}
-			className={locationPathname === path ? 'nav-active nav-path' : 'nav-path'}
+			className={
+				locationPathname === path.substring(1)
+					? 'nav-active nav-path'
+					: 'nav-path'
+			}
 		>
 			{name}
 		</Link>

@@ -1,3 +1,4 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -262,9 +263,13 @@ function TV({ backBaseUrl, TMDBBaseUrl, elementsId, setElementsId }: Props) {
 			}
 			elementCreatorsOrDirectors={creators}
 			elementDate={
-				TVShow.first_air_date &&
-				TVShow.first_air_date.slice(0, 4) + ' - ' + TVShow.last_air_date &&
-				TVShow.last_air_date.slice(0, 4)
+				TVShow.first_air_date
+					? TVShow.last_air_date
+						? TVShow.first_air_date.slice(0, 4) +
+						  ' - ' +
+						  TVShow.last_air_date.slice(0, 4)
+						: TVShow.first_air_date.slice(0, 4)
+					: null
 			}
 			elementDuration={null}
 			elementGenres={TVShow.genres}
