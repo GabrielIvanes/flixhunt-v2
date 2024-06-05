@@ -1,0 +1,12 @@
+@import '../../assets/styles/variables.scss';
+
+.parameters-wrapper {
+	position: absolute;
+	bottom: -40px;
+	right: 20px;
+	border: 1px solid rgb(45, 45, 45);
+	border-radius: 8px;
+	background-color: rgb(45, 45, 45);
+	padding: 10px;
+	z-index: 5;
+}

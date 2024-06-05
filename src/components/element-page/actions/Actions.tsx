@@ -13,14 +13,18 @@ import {
 	faEye,
 	faEyeSlash,
 } from '@fortawesome/free-regular-svg-icons';
-import { useState, SVGProps } from 'react';
+import { SVGProps } from 'react';
 
 import './actions.scss';
-import { ElementActions } from '../../../utils/interface';
+import { ElementAction } from '../../../utils/interface';
 
 interface Props {
+	elementActions: ElementAction[];
+	handleIconClick: (elementsAction: ElementAction | null) => void;
 	isElementHaveTrailer: boolean;
 	setShowTrailer: (bool: boolean) => void;
+	setShowComment: (bool: boolean) => void;
+	setShowOtherLists: (bool: boolean) => void;
 }
 
 export function MdiMovieOpenRemoveOutline(props: SVGProps<SVGSVGElement>) {
@@ -57,140 +61,132 @@ export function MdiMovieOpenCheck(props: SVGProps<SVGSVGElement>) {
 	);
 }
 
-function Actions({ isElementHaveTrailer, setShowTrailer }: Props) {
-	const [elementActions, setElementActions] = useState<ElementActions>({
-		like: {
-			value: false,
-			date: null,
-		},
-		watchlist: {
-			value: false,
-			date: null,
-		},
-		seen: {
-			value: false,
-			date: null,
-		},
-		theaterSeen: {
-			value: false,
-			date: null,
-		},
-		comment: {
-			value: '',
-			date: null,
-		},
-	});
-
+function Actions({
+	elementActions,
+	handleIconClick,
+	isElementHaveTrailer,
+	setShowTrailer,
+	setShowComment,
+	setShowOtherLists,
+}: Props) {
 	return (
-		<div className='actions'>
-			{isElementHaveTrailer && (
+		elementActions && (
+			<div className='actions'>
+				{isElementHaveTrailer && (
+					<div
+						className={
+							window.innerWidth > 950
+								? 'trailer clickable'
+								: 'trailer clickable icon-actions-wrapper'
+						}
+						onClick={() => setShowTrailer(true)}
+					>
+						<FontAwesomeIcon icon={faPlay} />
+						{window.innerWidth > 950 && <span>Run Trailer</span>}
+					</div>
+				)}
 				<div
-					className={
-						window.innerWidth > 950
-							? 'trailer clickable'
-							: 'trailer clickable icon-actions-wrapper'
+					className='clickable icon-actions-wrapper'
+					onClick={() =>
+						handleIconClick(
+							elementActions.find(
+								(elementAction) => elementAction.name === 'Like'
+							) || null
+						)
 					}
-					onClick={() => setShowTrailer(true)}
 				>
-					<FontAwesomeIcon icon={faPlay} />
-					{window.innerWidth > 950 && <span>Run Trailer</span>}
+					{(elementActions.find(
+						(elementAction) => elementAction.name === 'Like'
+					)?.value as boolean) ? (
+						<>
+							<FontAwesomeIcon icon={faHeartFull} />
+						</>
+					) : (
+						<>
+							<FontAwesomeIcon icon={faHeart as IconProp} />
+						</>
+					)}
 				</div>
-			)}
-			<div
-				className='clickable icon-actions-wrapper'
-				onClick={() =>
-					setElementActions((prevElementActions) => ({
-						...prevElementActions,
-						like: {
-							...prevElementActions.like,
-							value: !prevElementActions.like.value,
-						},
-					}))
-				}
-			>
-				{(elementActions.like.value as boolean) ? (
-					<>
-						<FontAwesomeIcon icon={faHeartFull} />
-					</>
-				) : (
-					<>
-						<FontAwesomeIcon icon={faHeart as IconProp} />
-					</>
-				)}
+				<div
+					className='clickable icon-actions-wrapper'
+					onClick={() =>
+						handleIconClick(
+							elementActions.find(
+								(elementAction) => elementAction.name === 'Watchlist'
+							) || null
+						)
+					}
+				>
+					{(elementActions.find(
+						(elementAction) => elementAction.name === 'Watchlist'
+					)?.value as boolean) ? (
+						<>
+							<FontAwesomeIcon icon={faBookmarkFull} />
+						</>
+					) : (
+						<>
+							<FontAwesomeIcon icon={faBookmark as IconProp} />
+						</>
+					)}
+				</div>
+				<div
+					className='clickable icon-actions-wrapper'
+					onClick={() =>
+						handleIconClick(
+							elementActions.find(
+								(elementAction) => elementAction.name === 'Seen'
+							) || null
+						)
+					}
+				>
+					{(elementActions.find(
+						(elementAction) => elementAction.name === 'Seen'
+					)?.value as boolean) ? (
+						<>
+							<FontAwesomeIcon icon={faEye as IconProp} />
+						</>
+					) : (
+						<>
+							<FontAwesomeIcon icon={faEyeSlash as IconProp} />
+						</>
+					)}
+				</div>
+				<div
+					className='clickable icon-actions-wrapper'
+					onClick={() =>
+						handleIconClick(
+							elementActions.find(
+								(elementAction) => elementAction.name === 'TheaterSeen'
+							) || null
+						)
+					}
+				>
+					{(elementActions.find(
+						(elementAction) => elementAction.name === 'TheaterSeen'
+					)?.value as boolean) ? (
+						<>
+							<MdiMovieOpenCheck />
+						</>
+					) : (
+						<>
+							<MdiMovieOpenRemoveOutline />
+						</>
+					)}
+				</div>
+				<div
+					className='clickable icon-actions-wrapper'
+					onClick={() => setShowOtherLists(true)}
+				>
+					<FontAwesomeIcon icon={faList as IconProp} />
+				</div>
+				<div
+					className='clickable icon-actions-wrapper'
+					onClick={() => setShowComment(true)}
+				>
+					<FontAwesomeIcon icon={faPen as IconProp} />
+				</div>
 			</div>
-			<div
-				className='clickable icon-actions-wrapper'
-				onClick={() =>
-					setElementActions((prevElementActions) => ({
-						...prevElementActions,
-						watchlist: {
-							...prevElementActions.watchlist,
-							value: !prevElementActions.watchlist.value,
-						},
-					}))
-				}
-			>
-				{(elementActions.watchlist.value as boolean) ? (
-					<>
-						<FontAwesomeIcon icon={faBookmarkFull} />
-					</>
-				) : (
-					<>
-						<FontAwesomeIcon icon={faBookmark as IconProp} />
-					</>
-				)}
-			</div>
-			<div
-				className='clickable icon-actions-wrapper'
-				onClick={() =>
-					setElementActions((prevElementActions) => ({
-						...prevElementActions,
-						seen: {
-							...prevElementActions.seen,
-							value: !prevElementActions.seen.value,
-						},
-					}))
-				}
-			>
-				{(elementActions.seen.value as boolean) ? (
-					<>
-						<FontAwesomeIcon icon={faEye as IconProp} />
-					</>
-				) : (
-					<>
-						<FontAwesomeIcon icon={faEyeSlash as IconProp} />
-					</>
-				)}
-			</div>
-			<div
-				className='clickable icon-actions-wrapper'
-				onClick={() =>
-					setElementActions((prevElementActions) => ({
-						...prevElementActions,
-						theaterSeen: {
-							...prevElementActions.theaterSeen,
-							value: !prevElementActions.theaterSeen.value,
-						},
-					}))
-				}
-			>
-				{(elementActions.theaterSeen.value as boolean) ? (
-					<>
-						<MdiMovieOpenCheck />
-					</>
-				) : (
-					<>
-						<MdiMovieOpenRemoveOutline />
-					</>
-				)}
-			</div>
-			<div className='clickable icon-actions-wrapper'>
-				<FontAwesomeIcon icon={faList as IconProp} />
-			</div>
-			<div className='clickable icon-actions-wrapper'>
-				<FontAwesomeIcon icon={faPen as IconProp} />
-			</div>
-		</div>
+		)
 	);
 }
 

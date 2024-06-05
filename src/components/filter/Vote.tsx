@@ -19,6 +19,7 @@ function Vote({ filters, handleVoteChange }: Props) {
 					type='number'
 					value={filters.vote_gte}
 					min={0}
+					step={10}
 					max={filters.vote_lte || ''}
 					onChange={(event) =>
 						handleVoteChange(
@@ -27,12 +28,14 @@ function Vote({ filters, handleVoteChange }: Props) {
 							filters
 						)
 					}
+					placeholder='min'
 				/>
 				<span> to </span>
 				<input
 					type='number'
 					value={filters.vote_lte || ''}
 					min={filters.vote_gte}
+					step={10}
 					onChange={(event) =>
 						handleVoteChange(
 							'vote_lte',
@@ -40,6 +43,7 @@ function Vote({ filters, handleVoteChange }: Props) {
 							filters
 						)
 					}
+					placeholder='max'
 				/>
 			</div>
 			<div>
@@ -48,6 +52,7 @@ function Vote({ filters, handleVoteChange }: Props) {
 					type='number'
 					min={0}
 					max={filters.rate_lte || 10}
+					step={0.1}
 					placeholder='1.0'
 					value={filters.rate_gte || ''}
 					onChange={(event) =>
@@ -63,6 +68,7 @@ function Vote({ filters, handleVoteChange }: Props) {
 					type='number'
 					min={filters.rate_gte || 0}
 					max={10}
+					step={0.1}
 					placeholder='10.0'
 					value={filters.rate_lte || ''}
 					onChange={(event) =>

@@ -16,9 +16,10 @@ import Pagination from '../../components/pagination/Pagination';
 interface Props {
 	backBaseUrl: string;
 	TMDBBaseUrl: string;
+	xsrfToken: string;
 }
 
-function Search({ backBaseUrl, TMDBBaseUrl }: Props) {
+function Search({ backBaseUrl, TMDBBaseUrl, xsrfToken }: Props) {
 	const [multiSearch, setMultiSearch] = useState<SearchType<MultiSearch>>();
 	const [moviesSearch, setMoviesSearch] = useState<SearchType<Movie>>();
 	const [TVShowsSearch, setTVShowsSearch] = useState<SearchType<TVShow>>();
@@ -52,6 +53,9 @@ function Search({ backBaseUrl, TMDBBaseUrl }: Props) {
 					page: page,
 				},
 				{
+					headers: {
+						'x-xsrf-token': xsrfToken,
+					},
 					withCredentials: true,
 				}
 			);
@@ -86,6 +90,10 @@ function Search({ backBaseUrl, TMDBBaseUrl }: Props) {
 		}
 	}
 
+	// useEffect(() => {
+	// 	if (inputQuery && inputQuery.current) inputQuery.current.focus();
+	// }, []);
+
 	useEffect(() => {
 		if (query !== '') {
 			search(query, 'multi', 1);
@@ -105,7 +113,8 @@ function Search({ backBaseUrl, TMDBBaseUrl }: Props) {
 	}, [personsPage, query]);
 
 	useEffect(() => {
-		if (multiSearch) setElementsOnTheScreen(multiSearch.results[0].media_type);
+		if (multiSearch && multiSearch.total_results > 0)
+			setElementsOnTheScreen(multiSearch.results[0].media_type);
 	}, [multiSearch]);
 
 	return (
@@ -116,6 +125,7 @@ function Search({ backBaseUrl, TMDBBaseUrl }: Props) {
 						type='text'
 						value={query}
 						onChange={(event) => setQuery(event.target.value)}
+						autoFocus
 					/>
 					{/* <FontAwesomeIcon icon={faMagnifyingGlass} className='clickable' /> */}
 				</div>

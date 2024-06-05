@@ -8,9 +8,10 @@ import List from '../../components/list/List';
 interface Props {
 	backBaseUrl: string;
 	TMDBBaseUrl: string;
+	xsrfToken: string;
 }
 
-function Home({ backBaseUrl, TMDBBaseUrl }: Props) {
+function Home({ backBaseUrl, TMDBBaseUrl, xsrfToken }: Props) {
 	const [moviesGenres, setMoviesGenres] = useState<Genre[]>([]);
 	const [TVShowsGenres, setTVShowsGenres] = useState<Genre[]>([]);
 	const [homeList, setHomeList] = useState<ListType[]>([]);
@@ -24,6 +25,9 @@ function Home({ backBaseUrl, TMDBBaseUrl }: Props) {
 			const response = await axios.get(
 				`${backBaseUrl}/api/TMDB/movies/genres`,
 				{
+					headers: {
+						'x-xsrf-token': xsrfToken,
+					},
 					withCredentials: true,
 				}
 			);
@@ -39,6 +43,9 @@ function Home({ backBaseUrl, TMDBBaseUrl }: Props) {
 	async function getTVShowsGenres() {
 		try {
 			const response = await axios.get(`${backBaseUrl}/api/TMDB/tv/genres`, {
+				headers: {
+					'x-xsrf-token': xsrfToken,
+				},
 				withCredentials: true,
 			});
 			setTVShowsGenres(response.data.genres);
@@ -55,6 +62,9 @@ function Home({ backBaseUrl, TMDBBaseUrl }: Props) {
 			const response = await axios.get(
 				`${backBaseUrl}/api/TMDB/movies/genres/${genreId}`,
 				{
+					headers: {
+						'x-xsrf-token': xsrfToken,
+					},
 					withCredentials: true,
 				}
 			);
@@ -74,6 +84,9 @@ function Home({ backBaseUrl, TMDBBaseUrl }: Props) {
 			const response = await axios.get(
 				`${backBaseUrl}/api/TMDB/tv/genres/${genreId}`,
 				{
+					headers: {
+						'x-xsrf-token': xsrfToken,
+					},
 					withCredentials: true,
 				}
 			);
@@ -89,6 +102,9 @@ function Home({ backBaseUrl, TMDBBaseUrl }: Props) {
 	async function getTrendingTVShows() {
 		try {
 			const response = await axios.get(`${backBaseUrl}/api/TMDB/tv/trending`, {
+				headers: {
+					'x-xsrf-token': xsrfToken,
+				},
 				withCredentials: true,
 			});
 			return response.data.results;
@@ -105,12 +121,35 @@ function Home({ backBaseUrl, TMDBBaseUrl }: Props) {
 			const response = await axios.get(
 				`${backBaseUrl}/api/TMDB/movies/trending`,
 				{
+					headers: {
+						'x-xsrf-token': xsrfToken,
+					},
 					withCredentials: true,
 				}
 			);
 			return response.data.results.filter(
 				(movie: Movie) => movie.adult === false
 			);
+		} catch (err) {
+			console.error(err);
+		}
+	}
+
+	/**
+	 * Get movies that are in french theaters. This function need to be modified to take into account the user's location.
+	 */
+	async function getMoviesInTheater() {
+		try {
+			const response = await axios.get(
+				`${backBaseUrl}/api/TMDB/movies/in-theater`,
+				{
+					headers: {
+						'x-xsrf-token': xsrfToken,
+					},
+					withCredentials: true,
+				}
+			);
+			return response.data.results;
 		} catch (err) {
 			console.error(err);
 		}
@@ -132,6 +171,13 @@ function Home({ backBaseUrl, TMDBBaseUrl }: Props) {
 				updatedHomeList.push({
 					name: 'Trending movies',
 					elements: trendingMovies,
+				});
+
+			const moviesInTheater: Movie[] = await getMoviesInTheater();
+			if (!updatedHomeList.some((list) => list.name === 'Movies in theater'))
+				updatedHomeList.push({
+					name: 'Movies in theater',
+					elements: moviesInTheater,
 				});
 
 			const trendingTVShows: TVShow[] = await getTrendingTVShows();

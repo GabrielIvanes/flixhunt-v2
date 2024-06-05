@@ -8,7 +8,13 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
 
-import { Crew, ElementParent, Genre, Provider } from '../../../utils/interface';
+import {
+	Crew,
+	ElementAction,
+	ElementParent,
+	Genre,
+	Provider,
+} from '../../../utils/interface';
 import Element from '../../element/Element';
 import './element-details.scss';
 import Actions from '../actions/Actions';
@@ -32,8 +38,12 @@ interface Props {
 	elementPosterHeight: number;
 	elementPosterWidth: number;
 	isElementHaveTrailer: boolean;
+	elementActions: ElementAction[];
+	handleIconClick: (elementsAction: ElementAction | null) => void;
 	media: 'movie' | 'tv' | 'season' | 'episode';
 	setShowTrailer: (bool: boolean) => void;
+	setShowOtherLists: (bool: boolean) => void;
+	setShowComment: (bool: boolean) => void;
 	elementsId: number[];
 	setElementsId: (elementsId: number[]) => void;
 }
@@ -58,7 +68,11 @@ function ElementDetails({
 	elementsId,
 	setElementsId,
 	media,
+	elementActions,
+	handleIconClick,
 	setShowTrailer,
+	setShowComment,
+	setShowOtherLists,
 	isElementHaveTrailer,
 }: Props) {
 	const [_, setRerender] = useState<boolean>(window.innerWidth > 975);
@@ -70,8 +84,10 @@ function ElementDetails({
 		const minuteString = minute >= 10 ? `${minute}` : `0${minute}`;
 		if (hour > 0) {
 			return `${hour}h ${minuteString}m`;
-		} else {
+		} else if (minute > 0) {
 			return `${minuteString} min`;
+		} else {
+			return '';
 		}
 	}
 
@@ -215,16 +231,18 @@ function ElementDetails({
 							)}
 						</div>
 					)}
-					{elementDuration && (
-						<div>
-							<span>{convertTime(elementDuration)}</span>
-							{_ && (
-								<span className='icon-row'>
-									<FontAwesomeIcon icon={faHourglassStart} />
-								</span>
-							)}
-						</div>
-					)}
+					{elementDuration &&
+						elementDuration &&
+						convertTime(elementDuration) != '0' && (
+							<div>
+								<span>{convertTime(elementDuration)}</span>
+								{_ && (
+									<span className='icon-row'>
+										<FontAwesomeIcon icon={faHourglassStart} />
+									</span>
+								)}
+							</div>
+						)}
 					{elementRating && (
 						<div>
 							<span>{elementRating}/10</span>
@@ -279,8 +297,12 @@ function ElementDetails({
 						</div>
 					))}
 				<Actions
+					elementActions={elementActions}
+					handleIconClick={handleIconClick}
 					isElementHaveTrailer={isElementHaveTrailer}
 					setShowTrailer={setShowTrailer}
+					setShowComment={setShowComment}
+					setShowOtherLists={setShowOtherLists}
 				/>
 				{elementProviders && elementProviders.length > 0 && (
 					<div className='providers-wrapper'>

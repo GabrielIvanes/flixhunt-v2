@@ -10,9 +10,10 @@ import Element from '../../components/element/Element';
 interface Props {
 	backBaseUrl: string;
 	TMDBBaseUrl: string;
+	xsrfToken: string;
 }
 
-function Person({ backBaseUrl, TMDBBaseUrl }: Props) {
+function Person({ backBaseUrl, TMDBBaseUrl, xsrfToken }: Props) {
 	const { id } = useParams();
 	const [person, setPerson] = useState<PersonDetails>();
 	const [elementsOnTheScreen, setElementsOnTheScreen] = useState<string>(''); // Allows us to filter media by job type
@@ -35,6 +36,9 @@ function Person({ backBaseUrl, TMDBBaseUrl }: Props) {
 			const response = await axios.get(
 				`${backBaseUrl}/api/TMDB/persons/${id}`,
 				{
+					headers: {
+						'x-xsrf-token': xsrfToken,
+					},
 					withCredentials: true,
 				}
 			);

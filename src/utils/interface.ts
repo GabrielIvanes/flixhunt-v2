@@ -11,7 +11,7 @@ export interface FormSignIn {
 }
 
 export interface User {
-	id: number;
+	id: string;
 	username: string;
 	image: string;
 }
@@ -195,17 +195,19 @@ export interface MovieDetails {
 	'watch/providers': WatchProviders;
 }
 
-interface ElementAction {
-	value: boolean | string;
-	date: Date | null;
+export interface ElementAction {
+	_id: string;
+	name: string;
+	value: boolean;
+	date: string | null;
 }
 
-export interface ElementActions {
-	like: ElementAction;
-	watchlist: ElementAction;
-	seen: ElementAction;
-	theaterSeen: ElementAction;
-	comment: ElementAction;
+export interface Comment {
+	_id: string;
+	userId: string;
+	TMDBId: number;
+	comment: string;
+	date: string;
 }
 
 interface AggregateCast {
@@ -490,4 +492,143 @@ export interface MultiSearch {
 	profile_path: string | null; // Present for 'person' media_type
 	known_for: PersonSearch[]; // Present for 'person' media_type
 	origin_country: string[]; // Present for 'person' media_type
+}
+
+export interface UserList {
+	_id: string;
+	userId: string;
+	name: string;
+}
+
+export interface ElementInList {
+	_id: string;
+	listId: string;
+	elementId: number; // TMDBId
+	elementModel: 'movie' | 'tv' | 'season' | 'episode';
+}
+
+export interface MyList {
+	userList: UserList;
+	elements: ElementInfoInList[];
+}
+
+export type ElementInfoInList =
+	| MovieInfoInList
+	| TVShowInfoInList
+	| SeasonInfoInList
+	| EpisodeInfoInList;
+
+export interface MovieInfoInList {
+	backdropPath: string;
+	credits: {
+		cast: [{ id: number }];
+		crew: [{ id: number }];
+	};
+	genres: [{ id: number }];
+	TMDBId: number;
+	overview: string;
+	posterPath: string;
+	recommendations: [{ id: number }];
+	date: string;
+	runtime: string;
+	tagline: string;
+	title: string;
+	media: string;
+	voteAverage: number;
+	video: {
+		name: string;
+		key: string;
+		site: string;
+		type: string;
+		official: boolean;
+	};
+	providers: [{ id: number }];
+	directors: [{ id: number }];
+	createdAt: string;
+}
+
+export interface TVShowInfoInList {
+	backdropPath: string;
+	credits: {
+		cast: [{ id: number }];
+		crew: [{ id: number }];
+	};
+	genres: [{ id: number }];
+	TMDBId: number;
+	overview: string;
+	posterPath: string;
+	recommendations: [{ id: number }];
+	firstDate: string;
+	lastDate: string;
+	tagline: string;
+	name: string;
+	media: string;
+	numberEpisodes: number;
+	numberSeasons: number;
+	voteAverage: number;
+	video: {
+		name: string;
+		key: string;
+		site: string;
+		type: string;
+		official: boolean;
+	};
+	providers: [{ id: number }];
+	creators: [{ id: number }];
+	createdAt: string;
+}
+
+export interface SeasonInfoInList {
+	credits: {
+		cast: [{ id: number }];
+		crew: [{ id: number }];
+	};
+	TMDBId: number;
+	TMDBTvId: number;
+	overview: string;
+	posterPath: string;
+	date: string;
+	seasonNumber: number;
+	name: string;
+	media: string;
+	voteAverage: number;
+	video: {
+		name: string;
+		key: string;
+		site: string;
+		type: string;
+		official: boolean;
+	};
+	providers: [{ id: number }];
+	createdAt: string;
+}
+
+export interface EpisodeInfoInList {
+	credits: {
+		cast: [{ id: number }];
+		crew: [{ id: number }];
+	};
+	TMDBId: number;
+	TMDBTvId: number;
+	nbSeason: number;
+	overview: string;
+	posterPath: string;
+	date: string;
+	runtime: string;
+	episodeNumber: number;
+	name: string;
+	media: string;
+	video: {
+		name: string;
+		key: string;
+		site: string;
+		type: string;
+		official: boolean;
+	};
+	images: [{ path: string }];
+	createdAt: string;
+}
+
+export interface MyListFilters {
+	media: { devString: string; clientString: string }[];
 }

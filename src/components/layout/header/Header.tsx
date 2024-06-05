@@ -1,19 +1,24 @@
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 import { User } from '../../../utils/interface';
 import AuthHeader from './AuthHeader';
 import NavigationHeader from './NavigationHeader';
 import UserHeader from './UserHeader';
 import '../layout.scss';
+import Parameters from '../../parameters/Parameters';
 
 interface Props {
 	frontBaseUrl: string;
+	backBaseUrl: string;
+	userId: string;
+	xsrfToken: string;
 }
 
-function Header({ frontBaseUrl }: Props) {
+function Header({ frontBaseUrl, backBaseUrl, userId, xsrfToken }: Props) {
 	const [user, setUser] = useState<User>({
-		id: 0,
+		id: '',
 		username: '',
 		image: '',
 	});
@@ -21,7 +26,33 @@ function Header({ frontBaseUrl }: Props) {
 	const [isScrolled, setIsScrolled] = useState<boolean>(false);
 	const [responsive, setResponsive] = useState<boolean>(false);
 	const [isNavigationOpen, setIsNavigationOpen] = useState<boolean>(false);
+	const [showParameters, setShowParameters] = useState<boolean>(false);
 	const location = useLocation();
+	const navigate = useNavigate();
+
+	async function getUser(id: string) {
+		try {
+			const response = await axios.get(`${backBaseUrl}/api/user/${id}`, {
+				headers: {
+					'x-xsrf-token': xsrfToken,
+				},
+				withCredentials: true,
+			});
+			console.log(response);
+
+			setUser({
+				id: userId,
+				username: response.data.username,
+				image: response.data.image,
+			});
+		} catch (err) {
+			console.error(err);
+		}
+	}
+
+	useEffect(() => {
+		if (userId !== '') getUser(userId);
+	}, [userId]);
 
 	useEffect(() => {
 		const locationPath = location.pathname.substring(1);
@@ -29,12 +60,6 @@ function Header({ frontBaseUrl }: Props) {
 		if (locationPath === 'signin' || locationPath === 'signup')
 			setIsAuthPage(true);
 		else setIsAuthPage(false);
-
-		setUser({
-			id: 1,
-			username: 'John Doe',
-			image: '1.png',
-		});
 
 		handleResize();
 	}, [location.pathname]);
@@ -56,6 +81,17 @@ function Header({ frontBaseUrl }: Props) {
 		setIsNavigationOpen(!isNavigationOpen);
 	}
 
+	async function logout() {
+		try {
+			await axios.get(`${backBaseUrl}/api/user/logout`, {
+				withCredentials: true,
+			});
+			navigate('/signin');
+		} catch (err) {
+			console.error(err);
+		}
+	}
+
 	window.addEventListener('scroll', handleScroll);
 	window.addEventListener('resize', handleResize);
 
@@ -75,12 +111,17 @@ function Header({ frontBaseUrl }: Props) {
 						responsive={responsive}
 						isNavigationOpen={isNavigationOpen}
 						handleNavPhoneClick={handleNavPhoneClick}
+						showParameters={showParameters}
+						setShowParameters={setShowParameters}
 					/>
 
 					{responsive && isNavigationOpen && (
 						<div className='nav-phone-close' onClick={handleNavPhoneClick}>
 							&#10006;
 						</div>
+					)}
+					{showParameters && (
+						<Parameters logout={logout} setShowParameters={setShowParameters} />
 					)}
 				</>
 			)}

@@ -14,9 +14,10 @@ import Filter from '../../components/filter/Filter';
 interface Props {
 	backBaseUrl: string;
 	TMDBBaseUrl: string;
+	xsrfToken: string;
 }
 
-function TopRated({ backBaseUrl, TMDBBaseUrl }: Props) {
+function TopRated({ backBaseUrl, TMDBBaseUrl, xsrfToken }: Props) {
 	const [page, setPage] = useState<number>(1);
 	const [lastPage, setLastPage] = useState<number>(500);
 	const [genres, setGenres] = useState<Genre[]>([]);
@@ -65,6 +66,9 @@ function TopRated({ backBaseUrl, TMDBBaseUrl }: Props) {
 					rate_lte: filters.rate_lte,
 				},
 				{
+					headers: {
+						'x-xsrf-token': xsrfToken,
+					},
 					withCredentials: true,
 				}
 			);
@@ -83,6 +87,9 @@ function TopRated({ backBaseUrl, TMDBBaseUrl }: Props) {
 			const response = await axios.get(
 				`${backBaseUrl}/api/TMDB/movies/genres`,
 				{
+					headers: {
+						'x-xsrf-token': xsrfToken,
+					},
 					withCredentials: true,
 				}
 			);

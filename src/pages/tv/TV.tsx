@@ -4,12 +4,15 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import {
+	Comment as CommentType,
 	Crew,
 	TVShowDetails,
 	Provider,
 	VideoItem,
 	Cast,
 	ElementList,
+	UserList,
+	ElementAction,
 } from '../../utils/interface';
 import ElementPage from '../../components/element-page/ElementPage';
 import Loader from '../../components/loader/Loader';
@@ -18,20 +21,134 @@ interface Props {
 	backBaseUrl: string;
 	TMDBBaseUrl: string;
 	elementsId: number[];
+	userId: string;
 	setElementsId: (elementsId: number[]) => void;
+	xsrfToken: string;
 }
 
-function TV({ backBaseUrl, TMDBBaseUrl, elementsId, setElementsId }: Props) {
+function TV({
+	backBaseUrl,
+	TMDBBaseUrl,
+	elementsId,
+	userId,
+	setElementsId,
+	xsrfToken,
+}: Props) {
 	const { id } = useParams();
 	const [TVShow, setTVShow] = useState<TVShowDetails>();
 	const [trailer, setTrailer] = useState<VideoItem>();
 	const [lists, setLists] = useState<ElementList[]>([]);
 	const [creators, setCreators] = useState<Crew[]>([]);
 	const [providers, setProviders] = useState<Provider[]>([]);
+	const [userLists, setUserLists] = useState<UserList[]>([]);
+	const [TVLists, setTVLists] = useState<ElementAction[]>([]);
+	const [elementActionsReady, setElementActionsReady] =
+		useState<boolean>(false);
+	const [comment, setComment] = useState<CommentType>({
+		_id: '',
+		userId: '',
+		TMDBId: -1,
+		comment: '',
+		date: '',
+	});
+
+	async function handleSubmitComment(commentValue: string) {
+		if (comment.comment === '') createComment(commentValue);
+		else updateComment(commentValue);
+	}
+
+	async function createComment(commentValue: string) {
+		try {
+			const response = await axios.post(
+				`${backBaseUrl}/api/comments/add`,
+				{
+					userId: userId,
+					TMDBId: id && parseInt(id),
+					elementModel: 'tv',
+					comment: commentValue,
+				},
+				{
+					headers: {
+						'x-xsrf-token': xsrfToken,
+					},
+					withCredentials: true,
+				}
+			);
+
+			const dateString = response.data.comment.date.substring(0, 10);
+
+			response.data.comment.date = dateString;
+
+			setComment(response.data.comment);
+		} catch (err) {
+			console.error(err);
+		}
+	}
+
+	async function getComment(userId: string) {
+		try {
+			const response = await axios.get(
+				`${backBaseUrl}/api/comments/user/${userId}/tv/${id}`,
+
+				{
+					headers: {
+						'x-xsrf-token': xsrfToken,
+					},
+					withCredentials: true,
+				}
+			);
+
+			if (response.data.success) {
+				const dateString = response.data.comment.date.substring(0, 10);
+
+				response.data.comment.date = dateString;
+
+				setComment(response.data.comment);
+			}
+		} catch (err) {
+			console.error(err);
+		}
+	}
+
+	async function updateComment(commentValue: string) {
+		try {
+			await axios.put(
+				`${backBaseUrl}/api/comments/update`,
+				{
+					userId: userId,
+					TMDBId: id && parseInt(id),
+					elementModel: 'tv',
+					comment: commentValue,
+				},
+				{
+					headers: {
+						'x-xsrf-token': xsrfToken,
+					},
+					withCredentials: true,
+				}
+			);
+
+			const date = new Date();
+			const dateString = `${date.getFullYear()}-${(date.getMonth() + 1)
+				.toString()
+				.padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+
+			setComment((prevComment) => ({
+				...prevComment,
+				comment: commentValue,
+				date: dateString,
+			}));
+		} catch (err) {
+			console.error(err);
+		}
+	}
 
 	async function getTVDetails(TVId: number) {
 		try {
 			const response = await axios.get(`${backBaseUrl}/api/TMDB/tv/${TVId}`, {
+				headers: {
+					'x-xsrf-token': xsrfToken,
+				},
 				withCredentials: true,
 			});
 			console.log(response.data);
@@ -40,6 +157,207 @@ function TV({ backBaseUrl, TMDBBaseUrl, elementsId, setElementsId }: Props) {
 			console.error(err);
 		}
 	}
+
+	async function getUserLists(userId: string) {
+		try {
+			const response = await axios.get(
+				`${backBaseUrl}/api/lists/userId/${userId}`,
+				{
+					headers: {
+						'x-xsrf-token': xsrfToken,
+					},
+					withCredentials: true,
+				}
+			);
+			setUserLists(response.data);
+		} catch (err) {
+			console.error(err);
+		}
+	}
+
+	async function getTvLists(userLists: UserList[], TVId: number) {
+		try {
+			const tmpTVLists: ElementAction[] = [];
+
+			if (userLists)
+				for (const userList of userLists) {
+					const response = await axios.get(
+						`${backBaseUrl}/api/lists/${userList._id}/elements/${TVId}/model/tv/isInList`,
+						{
+							headers: {
+								'x-xsrf-token': xsrfToken,
+							},
+							withCredentials: true,
+						}
+					);
+					tmpTVLists.push({
+						_id: userList._id,
+						name: userList.name,
+						value: response.data.include,
+						date: response.data.include ? response.data.date : null,
+					});
+				}
+			setTVLists(tmpTVLists);
+		} catch (err) {
+			console.error(err);
+		} finally {
+			setElementActionsReady(true);
+		}
+	}
+
+	async function addTVToList(TVId: number, listId: string) {
+		try {
+			await axios.post(
+				`${backBaseUrl}/api/lists/${listId}/elements/add`,
+				{ elementId: TVId, elementModel: 'tv' },
+				{
+					headers: {
+						'x-xsrf-token': xsrfToken,
+					},
+					withCredentials: true,
+				}
+			);
+			const TVListsTmp = [...TVLists];
+			const listIndex = TVLists.findIndex((TVList) => TVList._id === listId);
+			TVListsTmp[listIndex].value = true;
+			TVListsTmp[listIndex].date = Date.now().toLocaleString();
+			setTVLists(TVListsTmp);
+		} catch (err) {
+			console.error(err);
+		}
+	}
+
+	async function removeTVToList(TVId: number, listId: string) {
+		try {
+			await axios.delete(
+				`${backBaseUrl}/api/lists/${listId}/elements/remove/tv/${TVId}`,
+				{
+					headers: {
+						'x-xsrf-token': xsrfToken,
+					},
+					withCredentials: true,
+				}
+			);
+			const TVListsTmp = [...TVLists];
+			const listIndex = TVLists.findIndex((TVList) => TVList._id === listId);
+			TVListsTmp[listIndex].value = false;
+			TVListsTmp[listIndex].date = '';
+			setTVLists(TVListsTmp);
+		} catch (err) {
+			console.error(err);
+		}
+	}
+
+	async function addGenresToDb(TVShow: TVShowDetails) {
+		try {
+			for (const genre of TVShow.genres) {
+				axios.post(
+					`${backBaseUrl}/api/elements/genres/add`,
+					{
+						id: genre.id,
+						name: genre.name,
+						type: 'tv',
+					},
+					{
+						headers: {
+							'x-xsrf-token': xsrfToken,
+						},
+						withCredentials: true,
+					}
+				);
+			}
+		} catch (err) {
+			console.error(err);
+		}
+	}
+
+	async function addProvidersToDb(providers: Provider[]) {
+		try {
+			for (const provider of providers) {
+				axios.post(
+					`${backBaseUrl}/api/elements/providers/add`,
+					{
+						id: provider.provider_id,
+						name: provider.provider_name,
+						logoPath: provider.logo_path,
+					},
+					{
+						headers: {
+							'x-xsrf-token': xsrfToken,
+						},
+						withCredentials: true,
+					}
+				);
+			}
+		} catch (err) {
+			console.error(err);
+		}
+	}
+
+	async function addTVToDb(TVShow: TVShowDetails) {
+		try {
+			await axios.post(
+				`${backBaseUrl}/api/elements/tv-shows/add`,
+				{
+					backdropPath: TVShow.backdrop_path,
+					credits: {
+						cast: TVShow.aggregate_credits.cast.map((cast) => ({
+							id: cast.id,
+						})),
+						crew: TVShow.aggregate_credits.crew.map((crew) => ({
+							id: crew.id,
+						})),
+					},
+					genres: TVShow.genres.map((genre) => ({
+						id: genre.id,
+					})),
+					TMDBId: TVShow.id,
+					overview: TVShow.overview,
+					posterPath: TVShow.poster_path,
+					recommendations: TVShow.recommendations.results.map((reco) => ({
+						id: reco.id,
+					})),
+					firstDate: TVShow.first_air_date,
+					lastDate: TVShow.last_air_date,
+					tagline: TVShow.tagline,
+					name: TVShow.name,
+					voteAverage: TVShow.vote_average,
+					numberEpisodes: TVShow.number_of_episodes,
+					numberSeasons: TVShow.number_of_seasons,
+					video: trailer,
+					providers: providers.map((provider) => ({
+						id: provider.provider_id,
+					})),
+					creators: creators.map((creator) => ({
+						id: creator.id,
+					})),
+				},
+				{
+					headers: {
+						'x-xsrf-token': xsrfToken,
+					},
+					withCredentials: true,
+				}
+			);
+		} catch (err) {
+			console.error(err);
+		}
+	}
+
+	async function handleIconClick(elementsAction: ElementAction | null) {
+		if (elementsAction && TVShow) {
+			if (!elementsAction.value) {
+				addProvidersToDb(providers);
+				addGenresToDb(TVShow);
+				await addTVToDb(TVShow);
+				addTVToList(TVShow.id, elementsAction._id);
+			} else removeTVToList(TVShow.id, elementsAction._id);
+		}
+	}
+
+	useEffect(() => {
+		if (userId && id) getComment(userId);
+	}, [userId, id]);
 
 	useEffect(() => {
 		if (id) {
@@ -255,8 +573,18 @@ function TV({ backBaseUrl, TMDBBaseUrl, elementsId, setElementsId }: Props) {
 		}
 	}, [TVShow]);
 
-	return TVShow ? (
+	useEffect(() => {
+		getUserLists(userId);
+	}, [userId]);
+
+	useEffect(() => {
+		if (userLists.length > 0 && TVShow) getTvLists(userLists, TVShow.id);
+	}, [userLists, TVShow]);
+
+	return TVShow && TVLists && elementActionsReady ? (
 		<ElementPage
+			comment={comment}
+			handleSubmitComment={handleSubmitComment}
 			elementId={TVShow.id}
 			elementBackdropPath={
 				TVShow.backdrop_path && `${TMDBBaseUrl}original${TVShow.backdrop_path}`
@@ -292,6 +620,8 @@ function TV({ backBaseUrl, TMDBBaseUrl, elementsId, setElementsId }: Props) {
 			}
 			elementTagline={TVShow.tagline}
 			elementParents={null}
+			elementActions={TVLists}
+			handleIconClick={handleIconClick}
 			trailer={trailer ? trailer : null}
 			elementsId={elementsId}
 			setElementsId={setElementsId}

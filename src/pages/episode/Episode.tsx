@@ -3,11 +3,14 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import {
+	Comment as CommentType,
 	Crew,
 	VideoItem,
 	TVShowDetails,
 	ElementList,
 	EpisodeDetails,
+	UserList,
+	ElementAction,
 } from '../../utils/interface';
 import ElementPage from '../../components/element-page/ElementPage';
 import Loader from '../../components/loader/Loader';
@@ -16,20 +19,130 @@ interface Props {
 	backBaseUrl: string;
 	TMDBBaseUrl: string;
 	elementsId: number[];
+	userId: string;
 	setElementsId: (elementsId: number[]) => void;
+	xsrfToken: string;
 }
 
 function Episode({
 	backBaseUrl,
 	TMDBBaseUrl,
 	elementsId,
+	userId,
 	setElementsId,
+	xsrfToken,
 }: Props) {
 	const { id, nbSeason, nbEpisode } = useParams();
 	const [TVShow, setTVShow] = useState<TVShowDetails>();
 	const [episode, setEpisode] = useState<EpisodeDetails>();
 	const [lists, setLists] = useState<ElementList[]>([]);
 	const [trailer, setTrailer] = useState<VideoItem>();
+	const [userLists, setUserLists] = useState<UserList[]>([]);
+	const [episodeLists, setEpisodeLists] = useState<ElementAction[]>([]);
+	const [elementActionsReady, setElementActionsReady] =
+		useState<boolean>(false);
+	const [comment, setComment] = useState<CommentType>({
+		_id: '',
+		userId: '',
+		TMDBId: -1,
+		comment: '',
+		date: '',
+	});
+
+	async function handleSubmitComment(commentValue: string) {
+		if (episode) {
+			if (comment.comment === '') createComment(commentValue, episode?.id);
+			else updateComment(commentValue, episode.id);
+		}
+	}
+
+	async function createComment(commentValue: string, episodeId: number) {
+		try {
+			const response = await axios.post(
+				`${backBaseUrl}/api/comments/add`,
+				{
+					userId: userId,
+					TMDBId: episodeId,
+					elementModel: 'episode',
+					comment: commentValue,
+				},
+				{
+					headers: {
+						'x-xsrf-token': xsrfToken,
+					},
+					withCredentials: true,
+				}
+			);
+
+			console.log(response.data);
+
+			const dateString = response.data.comment.date.substring(0, 10);
+
+			response.data.comment.date = dateString;
+
+			setComment(response.data.comment);
+		} catch (err) {
+			console.error(err);
+		}
+	}
+
+	async function getComment(userId: string, episodeId: number) {
+		try {
+			const response = await axios.get(
+				`${backBaseUrl}/api/comments/user/${userId}/episode/${episodeId}`,
+
+				{
+					headers: {
+						'x-xsrf-token': xsrfToken,
+					},
+					withCredentials: true,
+				}
+			);
+
+			if (response.data.success) {
+				const dateString = response.data.comment.date.substring(0, 10);
+
+				response.data.comment.date = dateString;
+
+				setComment(response.data.comment);
+			}
+		} catch (err) {
+			console.error(err);
+		}
+	}
+
+	async function updateComment(commentValue: string, episodeId: number) {
+		try {
+			await axios.put(
+				`${backBaseUrl}/api/comments/update`,
+				{
+					userId: userId,
+					TMDBId: episodeId,
+					elementModel: 'episode',
+					comment: commentValue,
+				},
+				{
+					headers: {
+						'x-xsrf-token': xsrfToken,
+					},
+					withCredentials: true,
+				}
+			);
+
+			const date = new Date();
+			const dateString = `${date.getFullYear()}-${(date.getMonth() + 1)
+				.toString()
+				.padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+
+			setComment((prevComment) => ({
+				...prevComment,
+				comment: commentValue,
+				date: dateString,
+			}));
+		} catch (err) {
+			console.error(err);
+		}
+	}
 
 	async function getEpisodeDetails(
 		TVId: number,
@@ -40,6 +153,9 @@ function Episode({
 			const response = await axios.get(
 				`${backBaseUrl}/api/TMDB/tv/${TVId}/seasons/${nbSeason}/episodes/${nbEpisode}`,
 				{
+					headers: {
+						'x-xsrf-token': xsrfToken,
+					},
 					withCredentials: true,
 				}
 			);
@@ -53,6 +169,9 @@ function Episode({
 	async function getTVDetails(TVId: number) {
 		try {
 			const response = await axios.get(`${backBaseUrl}/api/TMDB/tv/${TVId}`, {
+				headers: {
+					'x-xsrf-token': xsrfToken,
+				},
 				withCredentials: true,
 			});
 			setTVShow(response.data);
@@ -60,6 +179,158 @@ function Episode({
 			console.error(err);
 		}
 	}
+
+	async function getUserLists(userId: string) {
+		try {
+			const response = await axios.get(
+				`${backBaseUrl}/api/lists/userId/${userId}`,
+				{
+					headers: {
+						'x-xsrf-token': xsrfToken,
+					},
+					withCredentials: true,
+				}
+			);
+			setUserLists(response.data);
+		} catch (err) {
+			console.error(err);
+		}
+	}
+
+	async function getEpisodeLists(userLists: UserList[], episodeList: number) {
+		try {
+			const tmpEpisodeLists: ElementAction[] = [];
+			for (const userList of userLists) {
+				const response = await axios.get(
+					`${backBaseUrl}/api/lists/${userList._id}/elements/${episodeList}/model/episode/isInList`,
+					{
+						headers: {
+							'x-xsrf-token': xsrfToken,
+						},
+						withCredentials: true,
+					}
+				);
+				tmpEpisodeLists.push({
+					_id: userList._id,
+					name: userList.name,
+					value: response.data.include,
+					date: response.data.include ? response.data.date : null,
+				});
+			}
+			setEpisodeLists(tmpEpisodeLists);
+		} catch (err) {
+			console.error(err);
+		} finally {
+			setElementActionsReady(true);
+		}
+	}
+
+	async function addEpisodeToList(episodeId: number, listId: string) {
+		try {
+			await axios.post(
+				`${backBaseUrl}/api/lists/${listId}/elements/add`,
+				{ elementId: episodeId, elementModel: 'episode' },
+				{
+					headers: {
+						'x-xsrf-token': xsrfToken,
+					},
+					withCredentials: true,
+				}
+			);
+			const episodeListsTmp = [...episodeLists];
+			const listIndex = episodeLists.findIndex(
+				(episodeList) => episodeList._id === listId
+			);
+			episodeListsTmp[listIndex].value = true;
+			episodeListsTmp[listIndex].date = Date.now().toLocaleString();
+			setEpisodeLists(episodeListsTmp);
+		} catch (err) {
+			console.error(err);
+		}
+	}
+
+	async function removeEpisodeToList(episodeId: number, listId: string) {
+		try {
+			await axios.delete(
+				`${backBaseUrl}/api/lists/${listId}/elements/remove/episode/${episodeId}`,
+				{
+					headers: {
+						'x-xsrf-token': xsrfToken,
+					},
+					withCredentials: true,
+				}
+			);
+			const episodeListsTmp = [...episodeLists];
+			const listIndex = episodeLists.findIndex(
+				(episodeList) => episodeList._id === listId
+			);
+			episodeListsTmp[listIndex].value = false;
+			episodeListsTmp[listIndex].date = '';
+			setEpisodeLists(episodeListsTmp);
+		} catch (err) {
+			console.error(err);
+		}
+	}
+
+	async function addEpisodeToDb(
+		episode: EpisodeDetails,
+		tvShow: TVShowDetails
+	) {
+		try {
+			console.log(
+				episode.images.stills.map((image) => ({
+					path: image.file_path,
+				}))
+			);
+			await axios.post(
+				`${backBaseUrl}/api/elements/episodes/add`,
+				{
+					credits: {
+						cast: episode.credits.cast.map((cast) => ({
+							id: cast.id,
+						})),
+						crew: episode.credits.crew.map((crew) => ({
+							id: crew.id,
+						})),
+					},
+					TMDBId: episode.id,
+					TMDBTvId: tvShow.id,
+					nbSeason: episode.season_number,
+					overview: episode.overview,
+					posterPath: episode.still_path,
+					date: episode.air_date,
+					runtime: episode.runtime,
+					episodeNumber: episode.episode_number,
+					name: episode.name,
+					video: trailer,
+					images: episode.images.stills.map((image) => ({
+						path: image.file_path,
+					})),
+				},
+				{
+					headers: {
+						'x-xsrf-token': xsrfToken,
+					},
+					withCredentials: true,
+				}
+			);
+		} catch (err) {
+			console.error(err);
+		}
+	}
+
+	async function handleIconClick(elementsAction: ElementAction | null) {
+		if (elementsAction && episode && TVShow) {
+			if (!elementsAction.value) {
+				await addEpisodeToDb(episode, TVShow);
+				addEpisodeToList(episode.id, elementsAction._id);
+			} else removeEpisodeToList(episode.id, elementsAction._id);
+		}
+	}
+
+	useEffect(() => {
+		if (userId && episode) getComment(userId, episode.id);
+	}, [userId, episode]);
 
 	useEffect(() => {
 		if (id && nbSeason && nbEpisode) {
@@ -176,8 +447,22 @@ function Episode({
 		}
 	}, [episode]);
 
-	return episode && nbSeason && TVShow ? (
+	useEffect(() => {
+		getUserLists(userId);
+	}, [userId]);
+
+	useEffect(() => {
+		if (userLists.length > 0 && episode) getEpisodeLists(userLists, episode.id);
+	}, [userLists, episode]);
+
+	return episode &&
+		nbSeason &&
+		TVShow &&
+		episodeLists &&
+		elementActionsReady ? (
 		<ElementPage
+			comment={comment}
+			handleSubmitComment={handleSubmitComment}
 			elementId={episode.id}
 			elementBackdropPath={
 				TVShow.backdrop_path && `${TMDBBaseUrl}original${TVShow.backdrop_path}`
@@ -214,6 +499,8 @@ function Episode({
 			elementProviders={null}
 			elementRating={null}
 			elementTagline={null}
+			elementActions={episodeLists}
+			handleIconClick={handleIconClick}
 			trailer={trailer ? trailer : null}
 			elementsId={elementsId}
 			setElementsId={setElementsId}

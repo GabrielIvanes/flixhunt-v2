@@ -15,12 +15,18 @@
 		height: 60%;
 		width: 25%;
 		min-width: 320px;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: space-around;
+		// display: flex;
+		// flex-direction: column;
+		// align-items: center;
+		// justify-content: space-around;
 		border-radius: 8px;
 		color: inherit;
+		position: relative;
+
+		h1 {
+			text-align: center;
+			margin-top: 40px;
+		}
 
 		h1,
 		p,
@@ -34,6 +40,8 @@
 			flex-direction: column;
 			justify-content: center;
 			align-items: center;
+			position: absolute;
+			top: 130px;
 
 			.form-group {
 				position: relative;
@@ -42,25 +50,7 @@
 				margin-bottom: 10px;
 
 				input {
-					width: 300px;
-					height: 30px;
-					border-radius: 3px;
-					padding: 0 5px 0 10px;
-					font-size: 15px;
-					border: 1px solid black;
-				}
-
-				input[type='text'],
-				input[type='email'],
-				input[type='password'] {
-					appearance: none;
-					border: none;
-					outline: none;
-					border-bottom: 0.2em solid $secondary-color;
-					background: rgba($secondary-color, 0.2);
-					border-radius: 0.2em 0.2em 0 0;
-					padding: 0.4em;
-					color: black;
+					font-size: 16px;
 				}
 
 				input[type='submit'] {
@@ -92,8 +82,18 @@
 			}
 		}
 
+		.error {
+			color: rgb(255, 85, 85);
+			text-align: justify;
+			margin: 0 10px;
+		}
+
 		.card-bottom {
 			text-align: center;
+			position: absolute;
+			bottom: 5px;
+			text-align: center;
+			width: 100%;
 
 			a {
 				text-decoration: none;

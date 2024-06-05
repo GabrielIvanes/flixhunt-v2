@@ -1,0 +1,51 @@
+@import '../../../assets/styles/variables.scss';
+
+.comment-page {
+	position: absolute;
+	top: 0;
+	width: 100%;
+	height: 100vh;
+
+	background-color: rgba(255, 255, 255, 0.4);
+
+	z-index: 2;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+
+	padding: 10px;
+
+	.xmark {
+		width: 500px;
+		text-align: end;
+		font-size: 25px;
+	}
+
+	form {
+		display: flex;
+		justify-content: center;
+		flex-direction: column;
+		align-items: center;
+		background-color: $card-color;
+		padding: 5px 10px;
+		border-radius: 8px;
+
+		textarea {
+			color: #fff;
+			resize: none;
+			width: 500px;
+			height: 200px;
+			border-bottom: 0.4em solid $secondary-color;
+			margin-bottom: 10px;
+			font-size: 17px;
+		}
+
+		input[type='submit'] {
+			width: fit-content;
+			padding: 5px 10px;
+			background-color: $secondary-color;
+			color: #000;
+		}
+	}
+}

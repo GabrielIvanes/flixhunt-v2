@@ -1,0 +1,17 @@
+section {
+	position: relative;
+	z-index: 1 !important;
+}
+
+.comment-wrapper {
+	margin-bottom: 20px !important;
+}
+
+.comment-wrapper .comment {
+	margin: 10px 0;
+	font-size: 20px;
+}
+
+.comment-wrapper h1 {
+	font-size: 1.5em;
+}
