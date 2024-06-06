@@ -14,6 +14,7 @@ import {
 	EpisodeInfoInList,
 	SeasonInfoInList,
 	MyListFilters,
+	ElementInfoInList,
 } from '../../utils/interface';
 import Loader from '../../components/loader/Loader';
 import Element from '../../components/element/Element';
@@ -43,15 +44,14 @@ function Lists({ backBaseUrl, TMDBBaseUrl, xsrfToken, userId }: Props) {
 	const [listReady, setListReady] = useState<boolean>(true);
 	const [creatingList, setCreatingList] = useState<boolean>(false);
 	const [filters, setFilters] = useState<MyListFilters>({
-		media: [
-			{ devString: 'movie', clientString: 'Movie' },
-			{ devString: 'tv', clientString: 'TV Show' },
-			{ devString: 'season', clientString: 'Season' },
-		],
+		media: [],
 	});
 	const [showFilters, setShowFilters] = useState<boolean>(false);
 	const [userListEdit, setUserListEdit] = useState<UserList>();
 	const [inputNewNameList, setInputNewNameList] = useState<string>('');
+	const [mediaInList, setMediaInList] = useState<
+		{ devString: string; clientString: string }[]
+	>([]);
 
 	const enumDefaultListsName = ['Like', 'Watchlist', 'Seen', 'TheaterSeen'];
 
@@ -143,31 +143,6 @@ function Lists({ backBaseUrl, TMDBBaseUrl, xsrfToken, userId }: Props) {
 		}
 	}
 
-	// async function getElementsInfoList(
-	// 	userList: UserList
-	// ): Promise<number | MyList> {
-	// 	try {
-	// 		const response = await axios.get(
-	// 			`${backBaseUrl}/api/lists/${userList._id}/elements/info`,
-	// 			{
-	// 				headers: {
-	// 					'x-xsrf-token': xsrfToken,
-	// 				},
-	// 				withCredentials: true,
-	// 			}
-	// 		);
-
-	// 		const newList: MyList = {
-	// 			userList: userList,
-	// 			elements: response.data,
-	// 		};
-	// 		return newList;
-	// 	} catch (err) {
-	// 		console.error(err);
-	// 		return 0;
-	// 	}
-	// }
-
 	async function getElementsInfoListPerPageFilters(
 		userList: UserList,
 		page: number,
@@ -191,6 +166,36 @@ function Lists({ backBaseUrl, TMDBBaseUrl, xsrfToken, userId }: Props) {
 				userList: userList,
 				elements: response.data.elements,
 			};
+
+			const updatedMediaInList: { devString: string; clientString: string }[] =
+				[];
+
+			if (response.data.media.includes('movie')) {
+				updatedMediaInList.push({
+					devString: 'movie',
+					clientString: 'Movie',
+				});
+			}
+			if (response.data.media.includes('tv')) {
+				updatedMediaInList.push({
+					devString: 'tv',
+					clientString: 'TV Show',
+				});
+			}
+			if (response.data.media.includes('season')) {
+				updatedMediaInList.push({
+					devString: 'season',
+					clientString: 'Season',
+				});
+			}
+			if (response.data.media.includes('episode')) {
+				updatedMediaInList.push({
+					devString: 'episode',
+					clientString: 'Episode',
+				});
+			}
+
+			setMediaInList(updatedMediaInList);
 			console.log(response);
 			return newList;
 		} catch (err) {
@@ -211,19 +216,51 @@ function Lists({ backBaseUrl, TMDBBaseUrl, xsrfToken, userId }: Props) {
 
 	async function handleChangeActiveList(list: UserList) {
 		if (listReady) {
-			const updatedFilters = {
-				...filters,
-				media: [
-					{ devString: 'movie', clientString: 'Movie' },
-					{ devString: 'tv', clientString: 'TV Show' },
-					{ devString: 'season', clientString: 'Season' },
-				],
-			};
 			setPage(1);
-			setFilters(updatedFilters);
 			setListReady(false);
 			setActiveList(list);
-			await getList(list, 1, updatedFilters);
+			const updatedFilters: MyListFilters = { ...filters, media: [] };
+			const newList = await getList(list, 1, updatedFilters);
+
+			const mediaSet = new Set(
+				(newList as MyList).elements.map(
+					(element: ElementInfoInList) => element.media
+				)
+			);
+			const uniqueMediaList = Array.from(mediaSet);
+
+			const updatedMediaFilters = [];
+
+			if (uniqueMediaList.includes('movie')) {
+				updatedMediaFilters.push({
+					devString: 'movie',
+					clientString: 'Movie',
+				});
+			}
+
+			if (uniqueMediaList.includes('tv')) {
+				updatedMediaFilters.push({
+					devString: 'tv',
+					clientString: 'TV Show',
+				});
+			}
+
+			if (uniqueMediaList.includes('season')) {
+				updatedMediaFilters.push({
+					devString: 'season',
+					clientString: 'Season',
+				});
+			}
+
+			if (uniqueMediaList.includes('episode')) {
+				updatedMediaFilters.push({
+					devString: 'episode',
+					clientString: 'Episode',
+				});
+			}
+
+			setFilters({ ...filters, media: updatedMediaFilters });
+
 			setListReady(true);
 		}
 	}
@@ -242,14 +279,13 @@ function Lists({ backBaseUrl, TMDBBaseUrl, xsrfToken, userId }: Props) {
 		page: number,
 		filters: MyListFilters
 	) {
-		// const newList: MyList | number = await getElementsInfoList(userList);
-		// typeof newList !== 'number' && setActiveMyList(newList);
 		const newList: MyList | number = await getElementsInfoListPerPageFilters(
 			userList,
 			page,
 			filters
 		);
 		typeof newList !== 'number' && setActiveMyList(newList);
+		return newList;
 	}
 	async function handleChangePageAndFilters(filters: MyListFilters) {
 		if (activeList) {
@@ -258,48 +294,6 @@ function Lists({ backBaseUrl, TMDBBaseUrl, xsrfToken, userId }: Props) {
 			setListReady(true);
 		}
 	}
-
-	// function getMediaInMyList(myList: MyList) {
-	// 	const mediaInMyList: string[] = [];
-	// 	for (const element of myList.elements) {
-	// 		if (mediaInMyList.includes(element.media)) continue;
-	// 		else mediaInMyList.push(element.media);
-	// 	}
-	// 	return mediaInMyList;
-	// }
-
-	// function changeFiltersMedia() {
-	// 	if (activeMyList) {
-	// 		const updatedFiltersMedia: MyListFilters = { ...filters };
-	// 		updatedFiltersMedia.media = [];
-	// 		const mediaInMyList = getMediaInMyList(activeMyList);
-
-	// 		for (const media of mediaInMyList) {
-	// 			if (media === 'movie')
-	// 				updatedFiltersMedia.media.push({
-	// 					devString: 'movie',
-	// 					clientString: 'Movie',
-	// 				});
-	// 			else if (media === 'tv')
-	// 				updatedFiltersMedia.media.push({
-	// 					devString: 'tv',
-	// 					clientString: 'TV Show',
-	// 				});
-	// 			else if (media === 'season')
-	// 				updatedFiltersMedia.media.push({
-	// 					devString: 'season',
-	// 					clientString: 'Season',
-	// 				});
-	// 			else if (media === 'episode' && mediaInMyList.length === 1)
-	// 				updatedFiltersMedia.media.push({
-	// 					devString: 'episode',
-	// 					clientString: 'Episode',
-	// 				});
-	// 		}
-
-	// 		setFilters(updatedFiltersMedia);
-	// 	}
-	// }
 
 	useEffect(() => {
 		if (userId !== '') {
@@ -314,10 +308,6 @@ function Lists({ backBaseUrl, TMDBBaseUrl, xsrfToken, userId }: Props) {
 	useEffect(() => {
 		handleChangePageAndFilters(filters);
 	}, [page]);
-
-	// useEffect(() => {
-	// 	changeFiltersMedia();
-	// }, [activeMyList]);
 
 	return userLists && activeList ? (
 		<div
@@ -343,6 +333,7 @@ function Lists({ backBaseUrl, TMDBBaseUrl, xsrfToken, userId }: Props) {
 					setShowFilters={setShowFilters}
 					listReady={listReady}
 					handleChangePageAndFilters={handleChangePageAndFilters}
+					mediaInList={mediaInList}
 				/>
 			)}
 			<div className='left-side-menu'>

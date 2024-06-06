@@ -11,6 +11,7 @@ interface Props {
 	setShowFilters: (bool: boolean) => void;
 	listReady: boolean;
 	handleChangePageAndFilters: (filters: MyListFilters) => void;
+	mediaInList: { devString: string; clientString: string }[];
 }
 
 function Filter({
@@ -19,6 +20,7 @@ function Filter({
 	setShowFilters,
 	listReady,
 	handleChangePageAndFilters,
+	mediaInList,
 }: Props) {
 	function handleMediaClick(
 		mediaDevClick: string,
@@ -56,7 +58,11 @@ function Filter({
 						onClick={() => setShowFilters(false)}
 					/>
 				</div>
-				<Media filters={filters} handleMediaClick={handleMediaClick} />
+				<Media
+					filters={filters}
+					handleMediaClick={handleMediaClick}
+					mediaInList={mediaInList}
+				/>
 			</div>
 		</div>
 	);

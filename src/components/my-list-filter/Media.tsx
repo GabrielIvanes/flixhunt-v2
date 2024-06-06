@@ -7,20 +7,15 @@ interface Props {
 		mediaClient: string,
 		filters: MyListFilters
 	) => void;
+	mediaInList: { devString: string; clientString: string }[];
 }
 
-function Media({ filters, handleMediaClick }: Props) {
-	const medias = [
-		{ devString: 'movie', clientString: 'Movie' },
-		{ devString: 'tv', clientString: 'TV Show' },
-		{ devString: 'season', clientString: 'Season' },
-		{ devString: 'episode', clientString: 'Episode' },
-	];
+function Media({ filters, mediaInList, handleMediaClick }: Props) {
 	return (
 		<section className='media-wrapper'>
 			<h1>Media</h1>
 			<div className='media'>
-				{medias.map((media) => (
+				{mediaInList.map((media) => (
 					<div
 						key={media.devString}
 						className={
