@@ -97,7 +97,7 @@ function Lists({ backBaseUrl, TMDBBaseUrl, xsrfToken, userId }: Props) {
 
 			const activeListTitle = document.querySelector('.active-list-title');
 
-			if (userList === activeList && activeListTitle) {
+			if (userList._id === activeList?._id && activeListTitle) {
 				activeListTitle.textContent = newName;
 			}
 		} catch (err) {
@@ -146,12 +146,13 @@ function Lists({ backBaseUrl, TMDBBaseUrl, xsrfToken, userId }: Props) {
 	async function getElementsInfoListPerPageFilters(
 		userList: UserList,
 		page: number,
-		filters: MyListFilters
+		filters: MyListFilters,
+		firstRender: boolean
 	): Promise<number | MyList> {
 		try {
 			console.log('Page: ', page);
 			const response = await axios.post(
-				`${backBaseUrl}/api/lists/${userList._id}/page/${page}`,
+				`${backBaseUrl}/api/lists/${userList._id}/page/${page}/isFirstRender/${firstRender}`,
 				{ filters: filters },
 				{
 					headers: {
@@ -220,7 +221,7 @@ function Lists({ backBaseUrl, TMDBBaseUrl, xsrfToken, userId }: Props) {
 			setListReady(false);
 			setActiveList(list);
 			const updatedFilters: MyListFilters = { ...filters, media: [] };
-			const newList = await getList(list, 1, updatedFilters);
+			const newList = await getList(list, 1, updatedFilters, true);
 
 			const mediaSet = new Set(
 				(newList as MyList).elements.map(
@@ -277,20 +278,25 @@ function Lists({ backBaseUrl, TMDBBaseUrl, xsrfToken, userId }: Props) {
 	async function getList(
 		userList: UserList,
 		page: number,
-		filters: MyListFilters
+		filters: MyListFilters,
+		firstRender: boolean
 	) {
 		const newList: MyList | number = await getElementsInfoListPerPageFilters(
 			userList,
 			page,
-			filters
+			filters,
+			firstRender
 		);
 		typeof newList !== 'number' && setActiveMyList(newList);
 		return newList;
 	}
-	async function handleChangePageAndFilters(filters: MyListFilters) {
+	async function handleChangePageAndFilters(
+		filters: MyListFilters,
+		page: number
+	) {
 		if (activeList) {
 			setListReady(false);
-			await getList(activeList, page, filters);
+			await getList(activeList, page, filters, false);
 			setListReady(true);
 		}
 	}
@@ -306,7 +312,7 @@ function Lists({ backBaseUrl, TMDBBaseUrl, xsrfToken, userId }: Props) {
 	}, [activeList]);
 
 	useEffect(() => {
-		handleChangePageAndFilters(filters);
+		handleChangePageAndFilters(filters, page);
 	}, [page]);
 
 	return userLists && activeList ? (
@@ -333,6 +339,7 @@ function Lists({ backBaseUrl, TMDBBaseUrl, xsrfToken, userId }: Props) {
 					setShowFilters={setShowFilters}
 					listReady={listReady}
 					handleChangePageAndFilters={handleChangePageAndFilters}
+					setPage={setPage}
 					mediaInList={mediaInList}
 				/>
 			)}

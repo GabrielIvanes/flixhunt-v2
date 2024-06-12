@@ -10,8 +10,9 @@ interface Props {
 	setFilters: (filters: MyListFilters) => void;
 	setShowFilters: (bool: boolean) => void;
 	listReady: boolean;
-	handleChangePageAndFilters: (filters: MyListFilters) => void;
+	handleChangePageAndFilters: (filters: MyListFilters, page: number) => void;
 	mediaInList: { devString: string; clientString: string }[];
+	setPage: (page: number) => void;
 }
 
 function Filter({
@@ -20,6 +21,7 @@ function Filter({
 	setShowFilters,
 	listReady,
 	handleChangePageAndFilters,
+	setPage,
 	mediaInList,
 }: Props) {
 	function handleMediaClick(
@@ -44,7 +46,8 @@ function Filter({
 			console.log(updatedFilters);
 
 			setFilters(updatedFilters);
-			handleChangePageAndFilters(updatedFilters);
+			setPage(1);
+			handleChangePageAndFilters(updatedFilters, 1);
 		}
 	}
 
