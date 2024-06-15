@@ -148,9 +148,8 @@ function Lists({ backBaseUrl, TMDBBaseUrl, xsrfToken, userId }: Props) {
 		page: number,
 		filters: MyListFilters,
 		firstRender: boolean
-	): Promise<number | MyList> {
+	) {
 		try {
-			console.log('Page: ', page);
 			const response = await axios.post(
 				`${backBaseUrl}/api/lists/${userList._id}/page/${page}/isFirstRender/${firstRender}`,
 				{ filters: filters },
