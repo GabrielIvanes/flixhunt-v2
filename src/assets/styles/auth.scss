@@ -12,7 +12,8 @@
 		background-color: white;
 		box-shadow: rgba(17, 17, 26, 0.1) 0px 1px 0px,
 			rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 48px;
-		height: 60%;
+		height: fit-content;
+		max-height: 65%;
 		width: 25%;
 		min-width: 320px;
 		// display: flex;
@@ -40,8 +41,8 @@
 			flex-direction: column;
 			justify-content: center;
 			align-items: center;
-			position: absolute;
-			top: 130px;
+			margin-top: 30px;
+			margin-bottom: 10px;
 
 			.form-group {
 				position: relative;
@@ -90,7 +91,6 @@
 
 		.card-bottom {
 			text-align: center;
-			position: absolute;
 			bottom: 5px;
 			text-align: center;
 			width: 100%;

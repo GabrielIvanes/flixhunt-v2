@@ -97,3 +97,33 @@ header {
 		z-index: 1;
 	}
 }
+
+footer {
+	background-color: $card-color;
+	height: 200px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100% !important;
+	margin: 0 !important;
+	padding: 0 !important;
+
+	> div {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 20px;
+		width: 400px;
+
+		a img {
+			width: 100px;
+			height: 100px;
+		}
+	}
+
+	@media screen and (max-width: 500px) {
+		> div {
+			width: 90% !important;
+		}
+	}
+}

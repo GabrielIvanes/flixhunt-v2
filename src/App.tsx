@@ -15,6 +15,7 @@ import TopRatedTv from './pages/top-rated-tv/TopRated';
 import Person from './pages/person/Person';
 import Search from './pages/search/Search';
 import Lists from './pages/lists/Lists';
+import Footer from './components/layout/footer/Footer';
 
 function App() {
 	const frontBaseUrl = 'http://localhost:5173';
@@ -218,6 +219,7 @@ function App() {
 					/>
 				</Routes>
 			</elementsContext.Provider>
+			<Footer />
 		</>
 	);
 }

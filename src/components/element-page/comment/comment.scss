@@ -17,12 +17,15 @@
 	padding: 10px;
 
 	.xmark {
-		width: 500px;
+		width: 100%;
+		max-width: 500px;
 		text-align: end;
 		font-size: 25px;
 	}
 
 	form {
+		width: 100%;
+		max-width: 500px;
 		display: flex;
 		justify-content: center;
 		flex-direction: column;
@@ -34,7 +37,7 @@
 		textarea {
 			color: #fff;
 			resize: none;
-			width: 500px;
+			width: 100%;
 			height: 200px;
 			border-bottom: 0.4em solid $secondary-color;
 			margin-bottom: 10px;

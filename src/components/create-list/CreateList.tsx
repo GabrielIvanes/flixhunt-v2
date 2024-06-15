@@ -47,6 +47,7 @@ function CreateList({
 							setErrorCreatingList('');
 							setInputText(event.target.value);
 						}}
+						maxLength={30}
 					/>
 					<input type='submit' value='Create list' />
 					<div className='error-message'>{error}</div>

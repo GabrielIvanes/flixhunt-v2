@@ -1,8 +1,7 @@
 .lists-wrapper {
-	display: flex;
-	gap: 10px;
 	padding-bottom: 10px !important;
 	position: relative;
+	width: 100%;
 
 	> div {
 		background-color: $card-color;
@@ -10,7 +9,10 @@
 	}
 
 	.left-side-menu {
-		position: fixed;
+		float: left;
+		position: sticky;
+		top: 60px;
+		// position: fixed;
 		height: calc(100vh - 80px);
 		width: 20%;
 		padding-top: 20px;
@@ -102,10 +104,12 @@
 	}
 
 	.main {
-		width: 80%;
 		margin-right: 10px;
 		padding: 60px 20px 10px 50px;
 		margin-left: calc(20% + 20px);
+		position: relative;
+		width: calc(80% - 40px);
+		min-height: calc(100vh - 80px);
 
 		.lists {
 			margin-top: 10px;
@@ -118,7 +122,7 @@
 
 		.filter-button {
 			position: absolute;
-			top: 100px;
+			top: 40px;
 			right: 50px;
 			background-color: $secondary-color;
 			color: black;
@@ -136,6 +140,56 @@
 		.loader {
 			position: absolute;
 			top: 50%;
+		}
+	}
+
+	@media screen and (max-width: 1005px) {
+		display: flex;
+		gap: 10px;
+		flex-direction: column;
+
+		.left-side-menu {
+			position: initial;
+			width: calc(100% - 20px) !important;
+			height: fit-content;
+			margin: 0 10px;
+
+			.lists-menu {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				margin: 0;
+				height: 100px;
+
+				> div {
+					height: fit-content;
+				}
+			}
+
+			.xmark,
+			.pen {
+				opacity: 1 !important;
+			}
+
+			.button-wrapper {
+				margin: 20px 0;
+				button {
+					width: 200px;
+				}
+			}
+		}
+		.main {
+			margin: 0 10px;
+			width: calc(100% - 20px);
+			padding: 60px 10px 10px 20px;
+			min-height: 100%;
+			flex-grow: 1;
+			margin: 0 10px !important;
+
+			.filter-button {
+				top: 20px;
+				right: 20px;
+			}
 		}
 	}
 }

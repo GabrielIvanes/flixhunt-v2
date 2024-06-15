@@ -388,6 +388,7 @@ function Lists({ backBaseUrl, TMDBBaseUrl, xsrfToken, userId }: Props) {
 									type='text'
 									value={inputNewNameList}
 									onChange={(event) => setInputNewNameList(event.target.value)}
+									maxLength={30}
 								/>
 								<FontAwesomeIcon
 									icon={faCheck}
