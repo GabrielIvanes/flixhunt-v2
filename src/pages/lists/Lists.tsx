@@ -206,63 +206,71 @@ function Lists({ backBaseUrl, TMDBBaseUrl, xsrfToken, userId }: Props) {
 	}
 
 	async function handleFormCreateList(listName: string) {
-		const list: CreateListResponse = await createList(listName);
+		try {
+			const list: CreateListResponse = await createList(listName);
 
-		if (list.success) {
-			await generateListsNav(userId, false);
-			setCreatingList(false);
-			handleChangeActiveList(list.response);
+			if (list.success) {
+				await generateListsNav(userId, false);
+				setCreatingList(false);
+				handleChangeActiveList(list.response);
+			}
+		} catch (err) {
+			console.error(err);
 		}
 	}
 
 	async function handleChangeActiveList(list: UserList) {
-		if (listReady) {
-			setPage(1);
-			setListReady(false);
-			setActiveList(list);
-			const updatedFilters: MyListFilters = { ...filters, media: [] };
-			const newList = await getList(list, 1, updatedFilters, true);
+		try {
+			if (listReady) {
+				setPage(1);
+				setListReady(false);
+				setActiveList(list);
+				const updatedFilters: MyListFilters = { ...filters, media: [] };
+				const newList = await getList(list, 1, updatedFilters, true);
 
-			const mediaSet = new Set(
-				(newList as MyList).elements.map(
-					(element: ElementInfoInList) => element.media
-				)
-			);
-			const uniqueMediaList = Array.from(mediaSet);
+				const mediaSet = new Set(
+					(newList as MyList).elements.map(
+						(element: ElementInfoInList) => element.media
+					)
+				);
+				const uniqueMediaList = Array.from(mediaSet);
 
-			const updatedMediaFilters = [];
+				const updatedMediaFilters = [];
 
-			if (uniqueMediaList.includes('movie')) {
-				updatedMediaFilters.push({
-					devString: 'movie',
-					clientString: 'Movie',
-				});
+				if (uniqueMediaList.includes('movie')) {
+					updatedMediaFilters.push({
+						devString: 'movie',
+						clientString: 'Movie',
+					});
+				}
+
+				if (uniqueMediaList.includes('tv')) {
+					updatedMediaFilters.push({
+						devString: 'tv',
+						clientString: 'TV Show',
+					});
+				}
+
+				if (uniqueMediaList.includes('season')) {
+					updatedMediaFilters.push({
+						devString: 'season',
+						clientString: 'Season',
+					});
+				}
+
+				if (uniqueMediaList.includes('episode')) {
+					updatedMediaFilters.push({
+						devString: 'episode',
+						clientString: 'Episode',
+					});
+				}
+
+				setFilters({ ...filters, media: updatedMediaFilters });
+
+				setListReady(true);
 			}
-
-			if (uniqueMediaList.includes('tv')) {
-				updatedMediaFilters.push({
-					devString: 'tv',
-					clientString: 'TV Show',
-				});
-			}
-
-			if (uniqueMediaList.includes('season')) {
-				updatedMediaFilters.push({
-					devString: 'season',
-					clientString: 'Season',
-				});
-			}
-
-			if (uniqueMediaList.includes('episode')) {
-				updatedMediaFilters.push({
-					devString: 'episode',
-					clientString: 'Episode',
-				});
-			}
-
-			setFilters({ ...filters, media: updatedMediaFilters });
-
-			setListReady(true);
+		} catch (err) {
+			console.error(err);
 		}
 	}
 
@@ -270,9 +278,13 @@ function Lists({ backBaseUrl, TMDBBaseUrl, xsrfToken, userId }: Props) {
 		userId: string,
 		isNeedToSetActiveList: boolean
 	) {
-		const userLists: UserList[] = await getUserLists(userId);
-		setUserLists(userLists);
-		isNeedToSetActiveList && setActiveList(userLists[0]);
+		try {
+			const userLists: UserList[] = await getUserLists(userId);
+			setUserLists(userLists);
+			isNeedToSetActiveList && setActiveList(userLists[0]);
+		} catch (err) {
+			console.error(err);
+		}
 	}
 
 	async function getList(
@@ -281,23 +293,31 @@ function Lists({ backBaseUrl, TMDBBaseUrl, xsrfToken, userId }: Props) {
 		filters: MyListFilters,
 		firstRender: boolean
 	) {
-		const newList: MyList | number = await getElementsInfoListPerPageFilters(
-			userList,
-			page,
-			filters,
-			firstRender
-		);
-		typeof newList !== 'number' && setActiveMyList(newList);
-		return newList;
+		try {
+			const newList: MyList | number = await getElementsInfoListPerPageFilters(
+				userList,
+				page,
+				filters,
+				firstRender
+			);
+			typeof newList !== 'number' && setActiveMyList(newList);
+			return newList;
+		} catch (err) {
+			console.error(err);
+		}
 	}
 	async function handleChangePageAndFilters(
 		filters: MyListFilters,
 		page: number
 	) {
-		if (activeList) {
-			setListReady(false);
-			await getList(activeList, page, filters, false);
-			setListReady(true);
+		try {
+			if (activeList) {
+				setListReady(false);
+				await getList(activeList, page, filters, false);
+				setListReady(true);
+			}
+		} catch (err) {
+			console.error(err);
 		}
 	}
 

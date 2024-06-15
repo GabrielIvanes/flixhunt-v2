@@ -346,13 +346,17 @@ function Movie({
 	}
 
 	async function handleIconClick(elementsAction: ElementAction | null) {
-		if (elementsAction && movie) {
-			if (!elementsAction.value) {
-				addProvidersToDb(providers);
-				addGenresToDb(movie);
-				await addMovieToDb(movie);
-				addMovieToList(movie.id, elementsAction._id);
-			} else removeMovieToList(movie.id, elementsAction._id);
+		try {
+			if (elementsAction && movie) {
+				if (!elementsAction.value) {
+					addProvidersToDb(providers);
+					addGenresToDb(movie);
+					await addMovieToDb(movie);
+					addMovieToList(movie.id, elementsAction._id);
+				} else removeMovieToList(movie.id, elementsAction._id);
+			}
+		} catch (err) {
+			console.error(err);
 		}
 	}
 

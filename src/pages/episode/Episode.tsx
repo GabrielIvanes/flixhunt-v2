@@ -320,11 +320,15 @@ function Episode({
 	}
 
 	async function handleIconClick(elementsAction: ElementAction | null) {
-		if (elementsAction && episode && TVShow) {
-			if (!elementsAction.value) {
-				await addEpisodeToDb(episode, TVShow);
-				addEpisodeToList(episode.id, elementsAction._id);
-			} else removeEpisodeToList(episode.id, elementsAction._id);
+		try {
+			if (elementsAction && episode && TVShow) {
+				if (!elementsAction.value) {
+					await addEpisodeToDb(episode, TVShow);
+					addEpisodeToList(episode.id, elementsAction._id);
+				} else removeEpisodeToList(episode.id, elementsAction._id);
+			}
+		} catch (err) {
+			console.error(err);
 		}
 	}
 

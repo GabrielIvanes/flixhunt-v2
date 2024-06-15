@@ -331,12 +331,17 @@ function Season({
 	}
 
 	async function handleIconClick(elementsAction: ElementAction | null) {
-		if (elementsAction && season && TVShow) {
-			addProvidersToDb(providers);
-			await addSeasonToDb(season, TVShow);
+		try {
+			if (elementsAction && season && TVShow) {
+				addProvidersToDb(providers);
+				await addSeasonToDb(season, TVShow);
 
-			if (!elementsAction.value) addSeasonToList(season.id, elementsAction._id);
-			else removeSeasonToList(season.id, elementsAction._id);
+				if (!elementsAction.value)
+					addSeasonToList(season.id, elementsAction._id);
+				else removeSeasonToList(season.id, elementsAction._id);
+			}
+		} catch (err) {
+			console.error(err);
 		}
 	}
 

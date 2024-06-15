@@ -345,13 +345,17 @@ function TV({
 	}
 
 	async function handleIconClick(elementsAction: ElementAction | null) {
-		if (elementsAction && TVShow) {
-			if (!elementsAction.value) {
-				addProvidersToDb(providers);
-				addGenresToDb(TVShow);
-				await addTVToDb(TVShow);
-				addTVToList(TVShow.id, elementsAction._id);
-			} else removeTVToList(TVShow.id, elementsAction._id);
+		try {
+			if (elementsAction && TVShow) {
+				if (!elementsAction.value) {
+					addProvidersToDb(providers);
+					addGenresToDb(TVShow);
+					await addTVToDb(TVShow);
+					addTVToList(TVShow.id, elementsAction._id);
+				} else removeTVToList(TVShow.id, elementsAction._id);
+			}
+		} catch (err) {
+			console.error(err);
 		}
 	}
 
