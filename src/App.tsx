@@ -20,8 +20,8 @@ import Footer from './components/layout/footer/Footer';
 function App() {
 	// const frontBaseUrl = 'http://localhost:5173';
 	// const backBaseUrl = 'http://localhost:3000';
-	const backBaseUrl = 'https://flixhunt-api-v2.vercel.app/';
-	const frontBaseUrl = 'https://flixhunt-v2.vercel.app/';
+	const backBaseUrl = 'https://flixhunt-api-v2.vercel.app';
+	const frontBaseUrl = 'https://flixhunt-v2.vercel.app';
 
 	const [TMDBBaseUrl, setTMDBBaseUrl] = useState<string>('');
 	const [elementsId, setElementsId] = useState<number[]>([]);
